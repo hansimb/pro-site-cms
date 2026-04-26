@@ -1,0 +1,28 @@
+{
+  "blocks": [
+    {
+      "id": "hero-1",
+      "type": "hero",
+      "visible": true,
+      "eyebrow": "Strategy, systems, and writing",
+      "heading": "A thoughtful digital home for analytical work.",
+      "body": "This starter is designed for a modern personal site with structured writing, carefully framed work, and a flexible home page.",
+      "primaryLink": {
+        "label": "Explore writing",
+        "href": "/writing"
+      },
+      "secondaryLink": {
+        "label": "See case studies",
+        "href": "/case-studies"
+      }
+    },
+    {
+      "id": "text-box-1",
+      "type": "textBox",
+      "visible": true,
+      "title": "System premise",
+      "body": "Keep the experience dark, calm, fast, and driven by content rather than templates that force filler.",
+      "tone": "accent"
+    }
+  ]
+}
