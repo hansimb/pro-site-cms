@@ -77,3 +77,5 @@ npm test
 - `Writing` stays hidden until at least one article is published.
 - Topics only appear when they have published articles.
 - The admin is intentionally simple and optimized for direct personal use.
+
+--
