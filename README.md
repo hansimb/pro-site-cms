@@ -1,4 +1,4 @@
-# Pro Site CMS
+﻿# Pro Site CMS
 
 `pro-site-cms` is a dark, Git-backed CMS for a professional personal website. It is built for one owner-admin, keeps content in repository files, and can publish through Vercel without relying on a database.
 
@@ -44,6 +44,7 @@ ADMIN_PASSWORD=change-me
 If you want production saves to write back to GitHub instead of the local filesystem, also set:
 
 ```bash
+EDIT_MODE=local | github
 GITHUB_TOKEN=
 GITHUB_OWNER=
 GITHUB_REPO=
