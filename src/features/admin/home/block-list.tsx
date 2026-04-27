@@ -1,6 +1,20 @@
 "use client";
 
 import type { HomeBlock } from "@/lib/content/schema";
+import { confirmDelete } from "@/features/admin/shared/delete-confirm";
+
+const blockTypeOptions: Array<{ label: string; type: HomeBlock["type"] }> = [
+  { label: "Hero", type: "hero" },
+  { label: "Rich Text", type: "richText" },
+  { label: "Quote", type: "quote" },
+  { label: "Links", type: "links" },
+  { label: "Featured Articles", type: "featuredArticles" },
+  { label: "Featured Case Studies", type: "featuredCaseStudies" },
+  { label: "Timeline", type: "timeline" },
+  { label: "Contact CTA", type: "contactCta" },
+  { label: "Image", type: "image" },
+  { label: "Text Box", type: "textBox" },
+];
 
 export function BlockList({
   blocks,
@@ -25,26 +39,16 @@ export function BlockList({
     <div className="list-stack">
       <div className="admin-panel">
         <h2 className="content-card-title">Blocks</h2>
-        <div className="admin-grid">
-          {[
-            "hero",
-            "richText",
-            "quote",
-            "links",
-            "featuredArticles",
-            "featuredCaseStudies",
-            "timeline",
-            "contactCta",
-            "image",
-            "textBox",
-          ].map((type) => (
+        <div className="admin-grid admin-block-grid">
+          {blockTypeOptions.map(({ label, type }) => (
             <button
-              className="button-secondary"
+              className="button-secondary admin-block-type-button"
               key={type}
               onClick={() => onAddBlock(type as HomeBlock["type"])}
               type="button"
             >
-              + {type}
+              <span className="admin-block-type-plus">+</span>
+              <span>{label}</span>
             </button>
           ))}
         </div>
@@ -77,7 +81,15 @@ export function BlockList({
               >
                 {block.visible ? "Hide" : "Show"}
               </button>
-              <button className="button-danger" onClick={() => onRemoveBlock(block.id)} type="button">
+              <button
+                className="button-danger"
+                onClick={() => {
+                  if (confirmDelete("Delete this block?")) {
+                    onRemoveBlock(block.id);
+                  }
+                }}
+                type="button"
+              >
                 Delete
               </button>
             </div>

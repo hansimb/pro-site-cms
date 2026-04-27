@@ -1,9 +1,22 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { confirmDelete } from "@/features/admin/shared/delete-confirm";
+import { useAdminAction } from "@/features/admin/shared/use-admin-action";
+import { readDraftSection, writeDraftSection } from "@/lib/content/draft-storage";
 import type { ArticleDocument, WritingTopic } from "@/lib/content/schema";
 import { ArticleList } from "./article-list";
 import { TopicManager } from "./topic-manager";
+
+function createTopic(): WritingTopic {
+  const id = crypto.randomUUID().slice(0, 8);
+  return {
+    description: "Add a short topic description.",
+    published: true,
+    slug: `topic-${id}`,
+    title: "New topic",
+  };
+}
 
 function parseReferences(value: string) {
   return value
@@ -21,16 +34,24 @@ function serializeReferences(items: { label: string; url: string }[]) {
 }
 
 export function WritingEditor({
+  editMode,
   initialArticles,
   initialTopics,
 }: {
+  editMode: "LOCAL" | "GITHUB";
   initialArticles: ArticleDocument[];
   initialTopics: WritingTopic[];
 }) {
-  const [articles, setArticles] = useState(initialArticles);
-  const [topics, setTopics] = useState(initialTopics);
-  const [selectedSlug, setSelectedSlug] = useState(initialArticles[0]?.slug ?? null);
-  const [status, setStatus] = useState("Idle");
+  const startingDraft =
+    editMode === "GITHUB"
+      ? readDraftSection<{ articles: ArticleDocument[]; topics: WritingTopic[] }>("writing")
+      : null;
+  const [articles, setArticles] = useState(startingDraft?.articles ?? initialArticles);
+  const [topics, setTopics] = useState(startingDraft?.topics ?? initialTopics);
+  const [selectedSlug, setSelectedSlug] = useState(
+    startingDraft?.articles[0]?.slug ?? initialArticles[0]?.slug ?? null,
+  );
+  const action = useAdminAction("Idle");
 
   const selectedArticle = useMemo(
     () => articles.find((article) => article.slug === selectedSlug) ?? null,
@@ -43,20 +64,42 @@ export function WritingEditor({
     );
   }
 
-  async function saveTopics() {
-    setStatus("Saving topics...");
-    const response = await fetch("/api/admin/writing", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        kind: "topics-save",
-        topics,
-      }),
+  async function saveWritingDraft(label: string) {
+    await action.run(async () => {
+      writeDraftSection("writing", { articles, topics });
+    }, {
+      pending: `Saving ${label} draft...`,
+      success: `${label} draft saved.`,
+      error: `${label} draft save failed.`,
     });
+  }
 
-    setStatus(response.ok ? "Topics saved." : "Topic save failed.");
+  async function saveTopics() {
+    if (editMode === "GITHUB") {
+      await saveWritingDraft("topic");
+      return;
+    }
+
+    await action.run(async () => {
+      const response = await fetch("/api/admin/writing", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          kind: "topics-save",
+          topics,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Topic save failed");
+      }
+    }, {
+      pending: "Saving topics...",
+      success: "Topics saved.",
+      error: "Topic save failed.",
+    });
   }
 
   async function saveArticle() {
@@ -64,73 +107,139 @@ export function WritingEditor({
       return;
     }
 
-    setStatus("Saving article...");
-    const response = await fetch("/api/admin/writing", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        kind: "article-save",
-        article: selectedArticle,
-      }),
-    });
+    if (editMode === "GITHUB") {
+      await saveWritingDraft("article");
+      return;
+    }
 
-    setStatus(response.ok ? "Article saved." : "Article save failed.");
+    await action.run(async () => {
+      const topicResponse = await fetch("/api/admin/writing", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          kind: "topics-save",
+          topics,
+        }),
+      });
+
+      if (!topicResponse.ok) {
+        throw new Error("Topic save failed");
+      }
+
+      const response = await fetch("/api/admin/writing", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          article: selectedArticle,
+          kind: "article-save",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Article save failed");
+      }
+    }, {
+      pending: "Saving article...",
+      success: "Article saved.",
+      error: "Article save failed.",
+    });
   }
 
   async function deleteArticle() {
-    if (!selectedArticle) {
+    if (!selectedArticle || !confirmDelete("Delete this article?")) {
       return;
     }
 
-    setStatus("Deleting article...");
-    const response = await fetch("/api/admin/writing", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        kind: "article-delete",
-        slug: selectedArticle.slug,
-        topic: selectedArticle.topic,
-      }),
+    if (editMode === "GITHUB") {
+      const remaining = articles.filter((article) => article.slug !== selectedArticle.slug);
+      setArticles(remaining);
+      setSelectedSlug(remaining[0]?.slug ?? null);
+      action.reset("Article removed from draft.");
+      return;
+    }
+
+    await action.run(async () => {
+      const response = await fetch("/api/admin/writing", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          kind: "article-delete",
+          slug: selectedArticle.slug,
+          topic: selectedArticle.topic,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Delete failed");
+      }
+
+      const remaining = articles.filter((article) => article.slug !== selectedArticle.slug);
+      setArticles(remaining);
+      setSelectedSlug(remaining[0]?.slug ?? null);
+    }, {
+      pending: "Deleting article...",
+      success: "Article deleted.",
+      error: "Delete failed.",
     });
-
-    if (!response.ok) {
-      setStatus("Delete failed.");
-      return;
-    }
-
-    const remaining = articles.filter((article) => article.slug !== selectedArticle.slug);
-    setArticles(remaining);
-    setSelectedSlug(remaining[0]?.slug ?? null);
-    setStatus("Article deleted.");
   }
 
   return (
     <div className="admin-page">
-      <TopicManager onSave={saveTopics} topics={topics} updateTopics={setTopics} />
+      <TopicManager
+        onAdd={() => setTopics((current) => [...current, createTopic()])}
+        onDelete={(slug) => {
+          if (!confirmDelete("Delete this topic and its articles?")) {
+            return;
+          }
+
+          const nextTopics = topics.filter((topic) => topic.slug !== slug);
+          const nextArticles = articles.filter((article) => article.topic !== slug);
+          setTopics(nextTopics);
+          setArticles(nextArticles);
+          setSelectedSlug(nextArticles[0]?.slug ?? null);
+          action.reset("Topic removed.");
+        }}
+        onSave={saveTopics}
+        topics={topics}
+        updateTopics={setTopics}
+      />
 
       <div className="split-layout">
         <ArticleList
           articles={articles}
           onAdd={() => {
-            const defaultTopic = topics[0]?.slug ?? "tech";
+            const defaultTopic = topics[0]?.slug ?? createTopic().slug;
+
+            if (topics.length === 0) {
+              setTopics([{
+                description: "Add a short topic description.",
+                published: true,
+                slug: defaultTopic,
+                title: "New topic",
+              }]);
+            }
+
             const article: ArticleDocument = {
               title: "New article",
               slug: `article-${crypto.randomUUID().slice(0, 8)}`,
               topic: defaultTopic,
-              excerpt: "",
+              excerpt: "Add a concise excerpt.",
               publishedAt: new Date().toISOString().slice(0, 10),
               updatedAt: new Date().toISOString().slice(0, 10),
               published: false,
               featured: false,
               references: [],
-              body: "",
+              body: "Write the first draft here.",
             };
             setArticles((current) => [...current, article]);
             setSelectedSlug(article.slug);
+            action.reset("Article added.");
           }}
           onSelect={setSelectedSlug}
           selectedSlug={selectedSlug}
@@ -139,7 +248,7 @@ export function WritingEditor({
         <section className="admin-panel">
           <div className="meta-row">
             <h2 className="content-card-title">Edit article</h2>
-            <span className="status-text">{status}</span>
+            <span className="status-text">{action.message}</span>
           </div>
           {selectedArticle ? (
             <div className="admin-form">
@@ -259,8 +368,13 @@ export function WritingEditor({
                 </label>
               </div>
               <div className="meta-row">
-                <button className="button-primary" onClick={saveArticle} type="button">
-                  Save article
+                <button
+                  className="button-primary"
+                  data-status={action.state}
+                  onClick={saveArticle}
+                  type="button"
+                >
+                  {editMode === "GITHUB" ? "Save draft" : "Save article"}
                 </button>
                 <button className="button-danger" onClick={deleteArticle} type="button">
                   Delete article

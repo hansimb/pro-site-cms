@@ -1,6 +1,5 @@
-import { notFound } from "next/navigation";
-import { ArticleView } from "@/features/site/writing/article-view";
-import { getArticleByTopicAndSlug } from "@/lib/content/loaders";
+import { ArticlePageView } from "@/features/site/drafts/article-page-view";
+import { getArticleByTopicAndSlug, getAllArticles } from "@/lib/content/loaders";
 
 type ArticlePageProps = {
   params: Promise<{
@@ -11,11 +10,17 @@ type ArticlePageProps = {
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug, topic } = await params;
-  const article = await getArticleByTopicAndSlug(topic, slug);
+  const [article, articles] = await Promise.all([
+    getArticleByTopicAndSlug(topic, slug),
+    getAllArticles(),
+  ]);
 
-  if (!article || !article.published) {
-    notFound();
-  }
-
-  return <ArticleView article={article} />;
+  return (
+    <ArticlePageView
+      initialArticle={article ?? null}
+      initialArticles={articles}
+      slug={slug}
+      topic={topic}
+    />
+  );
 }

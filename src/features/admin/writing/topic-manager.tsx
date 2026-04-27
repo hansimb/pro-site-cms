@@ -3,10 +3,14 @@
 import type { WritingTopic } from "@/lib/content/schema";
 
 export function TopicManager({
+  onAdd,
+  onDelete,
   onSave,
   topics,
   updateTopics,
 }: {
+  onAdd: () => void;
+  onDelete: (slug: string) => void;
   onSave: () => Promise<void>;
   topics: WritingTopic[];
   updateTopics: (topics: WritingTopic[]) => void;
@@ -15,6 +19,9 @@ export function TopicManager({
     <section className="admin-panel section-stack">
       <div className="meta-row">
         <h2 className="content-card-title">Topics</h2>
+        <button className="button-secondary" onClick={onAdd} type="button">
+          + Add topic
+        </button>
         <button className="button-primary" onClick={onSave} type="button">
           Save topics
         </button>
@@ -56,6 +63,23 @@ export function TopicManager({
               }}
               value={topic.description}
             />
+          </div>
+          <div className="meta-row" style={{ gridColumn: "1 / -1" }}>
+            <label>
+              <input
+                checked={topic.published}
+                onChange={(event) => {
+                  const next = [...topics];
+                  next[index] = { ...topic, published: event.target.checked };
+                  updateTopics(next);
+                }}
+                type="checkbox"
+              />{" "}
+              Published
+            </label>
+            <button className="button-danger" onClick={() => onDelete(topic.slug)} type="button">
+              Delete topic
+            </button>
           </div>
         </div>
       ))}

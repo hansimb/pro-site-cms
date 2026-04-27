@@ -1,8 +1,10 @@
 import { CaseStudyForm } from "@/features/admin/case-studies/case-study-form";
 import { getCaseStudies } from "@/lib/content/loaders";
+import { getEditMode } from "@/lib/env";
 
 export default async function AdminCaseStudiesPage() {
   const caseStudies = await getCaseStudies();
+  const editMode = getEditMode();
 
   return (
     <div className="admin-page">
@@ -14,7 +16,7 @@ export default async function AdminCaseStudiesPage() {
           background, problem, solution, process, results, and links.
         </p>
       </header>
-      <CaseStudyForm initialCaseStudies={caseStudies} />
+      <CaseStudyForm editMode={editMode} initialCaseStudies={caseStudies} />
     </div>
   );
 }

@@ -60,6 +60,14 @@ export const defaultSiteSettings: SiteSettings = {
   siteTitle: "Pro Site CMS",
   siteDescription: "A dark editorial starter for a professional personal site.",
   accentColor: "#7ee081",
+  backgroundColor: "#07111f",
+  gradientColor: "#7ee081",
+  gradientStyle: "radial",
+  surfaceColor: "#122036",
+  textColor: "#f5f7fb",
+  mutedColor: "#aeb7c6",
+  typographyStyle: "editorial",
+  radiusStyle: "balanced",
   footerText: "Built with intent.",
 };
 

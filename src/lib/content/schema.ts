@@ -172,6 +172,14 @@ export const siteSettingsSchema = z.object({
   siteTitle: z.string().min(1),
   siteDescription: z.string().min(1),
   accentColor: z.string().regex(/^#([0-9a-fA-F]{6})$/),
+  backgroundColor: z.string().regex(/^#([0-9a-fA-F]{6})$/).default("#07111f"),
+  gradientColor: z.string().regex(/^#([0-9a-fA-F]{6})$/).default("#7ee081"),
+  gradientStyle: z.enum(["radial", "diagonal", "soft"]).default("radial"),
+  surfaceColor: z.string().regex(/^#([0-9a-fA-F]{6})$/).default("#122036"),
+  textColor: z.string().regex(/^#([0-9a-fA-F]{6})$/).default("#f5f7fb"),
+  mutedColor: z.string().regex(/^#([0-9a-fA-F]{6})$/).default("#aeb7c6"),
+  typographyStyle: z.enum(["editorial", "technical", "plain"]).default("editorial"),
+  radiusStyle: z.enum(["sharp", "balanced", "soft"]).default("balanced"),
   footerText: z.string().min(1).optional(),
 });
 

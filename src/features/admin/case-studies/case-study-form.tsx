@@ -1,6 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { readDraftSection, writeDraftSection } from "@/lib/content/draft-storage";
+import { confirmDelete } from "@/features/admin/shared/delete-confirm";
+import { useAdminAction } from "@/features/admin/shared/use-admin-action";
 import type { CaseStudy } from "@/lib/content/schema";
 import { CaseStudyList } from "./case-study-list";
 
@@ -37,10 +40,20 @@ function serializeLinks(items: { href: string; label: string }[]) {
   return items.map((item) => `${item.label} | ${item.href}`).join("\n");
 }
 
-export function CaseStudyForm({ initialCaseStudies }: { initialCaseStudies: CaseStudy[] }) {
-  const [caseStudies, setCaseStudies] = useState(initialCaseStudies);
-  const [selectedId, setSelectedId] = useState<string | null>(initialCaseStudies[0]?.id ?? null);
-  const [status, setStatus] = useState("Idle");
+export function CaseStudyForm({
+  editMode,
+  initialCaseStudies,
+}: {
+  editMode: "LOCAL" | "GITHUB";
+  initialCaseStudies: CaseStudy[];
+}) {
+  const startingCaseStudies =
+    editMode === "GITHUB"
+      ? readDraftSection<CaseStudy[]>("caseStudies") ?? initialCaseStudies
+      : initialCaseStudies;
+  const [caseStudies, setCaseStudies] = useState(startingCaseStudies);
+  const [selectedId, setSelectedId] = useState<string | null>(startingCaseStudies[0]?.id ?? null);
+  const action = useAdminAction("Idle");
 
   const selectedCaseStudy = useMemo(
     () => caseStudies.find((caseStudy) => caseStudy.id === selectedId) ?? null,
@@ -54,16 +67,34 @@ export function CaseStudyForm({ initialCaseStudies }: { initialCaseStudies: Case
   }
 
   async function saveCaseStudies() {
-    setStatus("Saving...");
-    const response = await fetch("/api/admin/case-studies", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({ items: caseStudies }),
-    });
+    if (editMode === "GITHUB") {
+      await action.run(async () => {
+        writeDraftSection("caseStudies", caseStudies);
+      }, {
+        pending: "Saving draft...",
+        success: "Draft saved.",
+        error: "Draft save failed.",
+      });
+      return;
+    }
 
-    setStatus(response.ok ? "Saved." : "Save failed.");
+    await action.run(async () => {
+      const response = await fetch("/api/admin/case-studies", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ items: caseStudies }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Save failed");
+      }
+    }, {
+      pending: "Saving...",
+      success: "Saved.",
+      error: "Save failed.",
+    });
   }
 
   return (
@@ -82,7 +113,7 @@ export function CaseStudyForm({ initialCaseStudies }: { initialCaseStudies: Case
       <section className="admin-panel">
         <div className="meta-row">
           <h2 className="content-card-title">Edit case study</h2>
-          <span className="status-text">{status}</span>
+          <span className="status-text">{action.message}</span>
         </div>
         {selectedCaseStudy ? (
           <div className="admin-form">
@@ -167,16 +198,24 @@ export function CaseStudyForm({ initialCaseStudies }: { initialCaseStudies: Case
               </label>
             </div>
             <div className="meta-row">
-              <button className="button-primary" onClick={saveCaseStudies} type="button">
-                Save case studies
+              <button
+                className="button-primary"
+                data-status={action.state}
+                onClick={saveCaseStudies}
+                type="button"
+              >
+                {editMode === "GITHUB" ? "Save draft" : "Save case studies"}
               </button>
               <button
                 className="button-danger"
                 onClick={() => {
-                  setCaseStudies((current) =>
-                    current.filter((caseStudy) => caseStudy.id !== selectedCaseStudy.id),
-                  );
-                  setSelectedId(caseStudies.find((caseStudy) => caseStudy.id !== selectedCaseStudy.id)?.id ?? null);
+                  if (!confirmDelete("Delete this case study?")) {
+                    return;
+                  }
+
+                  const next = caseStudies.filter((caseStudy) => caseStudy.id !== selectedCaseStudy.id);
+                  setCaseStudies(next);
+                  setSelectedId(next[0]?.id ?? null);
                 }}
                 type="button"
               >

@@ -1,9 +1,11 @@
 import { BlockEditor } from "@/features/admin/home/block-editor";
 import { MediaLibrary } from "@/features/admin/media/media-library";
 import { getHomeDocument, getUploadedMediaPaths } from "@/lib/content/loaders";
+import { getEditMode } from "@/lib/env";
 
 export default async function AdminHomePage() {
   const [homeDocument, mediaPaths] = await Promise.all([getHomeDocument(), getUploadedMediaPaths()]);
+  const editMode = getEditMode();
 
   return (
     <div className="admin-page">
@@ -12,7 +14,7 @@ export default async function AdminHomePage() {
         <h1 className="page-title">Home editor</h1>
         <p>Add, reorder, and edit the blocks that shape your home page.</p>
       </header>
-      <BlockEditor initialDocument={homeDocument} />
+      <BlockEditor editMode={editMode} initialDocument={homeDocument} />
       <MediaLibrary initialPaths={mediaPaths} />
     </div>
   );

@@ -1,8 +1,10 @@
 import { WritingEditor } from "@/features/admin/writing/article-editor";
 import { getAllArticles, getWritingTopics } from "@/lib/content/loaders";
+import { getEditMode } from "@/lib/env";
 
 export default async function AdminWritingPage() {
   const [topics, articles] = await Promise.all([getWritingTopics(), getAllArticles()]);
+  const editMode = getEditMode();
 
   return (
     <div className="admin-page">
@@ -14,7 +16,7 @@ export default async function AdminWritingPage() {
           without opening a separate editor.
         </p>
       </header>
-      <WritingEditor initialArticles={articles} initialTopics={topics} />
+      <WritingEditor editMode={editMode} initialArticles={articles} initialTopics={topics} />
     </div>
   );
 }

@@ -1,8 +1,10 @@
 import { SiteSettingsForm } from "@/features/admin/settings/site-settings-form";
 import { getSiteSettings } from "@/lib/content/loaders";
+import { getEditMode } from "@/lib/env";
 
 export default async function AdminSettingsPage() {
   const siteSettings = await getSiteSettings();
+  const editMode = getEditMode();
 
   return (
     <div className="admin-page">
@@ -14,7 +16,7 @@ export default async function AdminSettingsPage() {
           accent color that drives the site identity.
         </p>
       </header>
-      <SiteSettingsForm initialSettings={siteSettings} />
+      <SiteSettingsForm editMode={editMode} initialSettings={siteSettings} />
     </div>
   );
 }

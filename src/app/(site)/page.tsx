@@ -1,5 +1,5 @@
 import { getPublishedArticles, getPublishedCaseStudies, getHomeDocument } from "@/lib/content/loaders";
-import { renderHomeBlock } from "@/features/site/sections/section-renderer";
+import { HomePageView } from "@/features/site/drafts/home-page-view";
 
 export default async function HomePage() {
   const [home, articles, caseStudies] = await Promise.all([
@@ -9,10 +9,10 @@ export default async function HomePage() {
   ]);
 
   return (
-    <main className="page-stack">
-      {home.blocks
-        .filter((block) => block.visible)
-        .map((block) => renderHomeBlock(block, articles, caseStudies))}
-    </main>
+    <HomePageView
+      initialArticles={articles}
+      initialCaseStudies={caseStudies}
+      initialHome={home}
+    />
   );
 }

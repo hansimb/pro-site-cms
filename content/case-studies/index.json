@@ -1,3 +1,46 @@
 {
-  "items": []
+  "items": [
+    {
+      "id": "case-43849ec7-c502-4e27-afe0-37c79164ae66",
+      "title": "New case study",
+      "summary": "asd",
+      "background": "asd",
+      "problem": "asd",
+      "solution": "asd",
+      "process": "asd",
+      "results": "asd",
+      "links": [
+        {
+          "label": "a",
+          "href": "sd"
+        }
+      ],
+      "tags": [
+        "asd"
+      ],
+      "published": true,
+      "featured": false
+    },
+    {
+      "id": "case-76998bd1-2069-4a77-b9c3-80b8e4bc362f",
+      "title": "New case study2",
+      "summary": "asd",
+      "background": "asd",
+      "problem": "asd",
+      "solution": "asd",
+      "process": "asd",
+      "results": "asd",
+      "links": [
+        {
+          "label": "a",
+          "href": "sd"
+        }
+      ],
+      "tags": [
+        "asd"
+      ],
+      "published": true,
+      "featured": false
+    }
+  ]
 }

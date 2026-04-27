@@ -22,7 +22,7 @@ export function FeaturedArticlesSection({
             href={`/writing/${article.topic}/${article.slug}`}
             key={article.slug}
           >
-            <div className="meta-row">
+            <div className="meta-row card-meta-row">
               <span>{article.topic}</span>
               <span>{article.publishedAt}</span>
             </div>

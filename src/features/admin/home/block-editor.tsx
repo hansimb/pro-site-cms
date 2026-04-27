@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { writeDraftSection, readDraftSection } from "@/lib/content/draft-storage";
 import type { HomeBlock, HomeDocument } from "@/lib/content/schema";
+import { useAdminAction } from "@/features/admin/shared/use-admin-action";
 import { BlockFormSwitch } from "./block-form-switch";
 import { BlockList } from "./block-list";
 
@@ -61,10 +63,18 @@ function moveItem<T extends { id: string }>(items: T[], id: string, direction: -
   return next;
 }
 
-export function BlockEditor({ initialDocument }: { initialDocument: HomeDocument }) {
-  const [document, setDocument] = useState(initialDocument);
-  const [selectedBlockId, setSelectedBlockId] = useState(initialDocument.blocks[0]?.id ?? null);
-  const [status, setStatus] = useState("Idle");
+export function BlockEditor({
+  editMode,
+  initialDocument,
+}: {
+  editMode: "LOCAL" | "GITHUB";
+  initialDocument: HomeDocument;
+}) {
+  const startingDocument =
+    editMode === "GITHUB" ? readDraftSection<HomeDocument>("home") ?? initialDocument : initialDocument;
+  const [document, setDocument] = useState(startingDocument);
+  const [selectedBlockId, setSelectedBlockId] = useState(startingDocument.blocks[0]?.id ?? null);
+  const action = useAdminAction("Idle");
 
   const selectedBlock = useMemo(
     () => document.blocks.find((block) => block.id === selectedBlockId) ?? null,
@@ -79,16 +89,34 @@ export function BlockEditor({ initialDocument }: { initialDocument: HomeDocument
   }
 
   async function saveDocument() {
-    setStatus("Saving...");
-    const response = await fetch("/api/admin/home", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(document),
-    });
+    if (editMode === "GITHUB") {
+      await action.run(async () => {
+        writeDraftSection("home", document);
+      }, {
+        pending: "Saving draft...",
+        success: "Draft saved.",
+        error: "Draft save failed.",
+      });
+      return;
+    }
 
-    setStatus(response.ok ? "Saved." : "Save failed.");
+    await action.run(async () => {
+      const response = await fetch("/api/admin/home", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(document),
+      });
+
+      if (!response.ok) {
+        throw new Error("Save failed");
+      }
+    }, {
+      pending: "Saving...",
+      success: "Saved.",
+      error: "Save failed.",
+    });
   }
 
   return (
@@ -123,14 +151,19 @@ export function BlockEditor({ initialDocument }: { initialDocument: HomeDocument
       <section className="admin-panel">
         <div className="meta-row">
           <h2 className="content-card-title">Edit block</h2>
-          <span className="status-text">{status}</span>
+          <span className="status-text">{action.message}</span>
         </div>
         {selectedBlock ? (
           <>
             <BlockFormSwitch block={selectedBlock} onChange={updateBlock} />
             <div className="meta-row">
-              <button className="button-primary" onClick={saveDocument} type="button">
-                Save home page
+              <button
+                className="button-primary"
+                data-status={action.state}
+                onClick={saveDocument}
+                type="button"
+              >
+                {editMode === "GITHUB" ? "Save draft" : "Save home page"}
               </button>
             </div>
           </>

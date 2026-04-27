@@ -1,10 +1,13 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { LogoutButton } from "@/features/admin/auth/logout-button";
+import { PublishControls } from "@/features/admin/shared/publish-controls";
 import { requireAdminPageAccess } from "@/lib/auth/require-admin";
+import { getEditMode } from "@/lib/env";
 
 export default async function AdminDashboardLayout({ children }: { children: ReactNode }) {
   await requireAdminPageAccess();
+  const editMode = getEditMode();
 
   return (
     <div className="admin-dashboard">
@@ -17,6 +20,7 @@ export default async function AdminDashboardLayout({ children }: { children: Rea
           <Link href="/admin/settings">Settings</Link>
           <Link href="/">Visit site</Link>
         </nav>
+        <PublishControls enabled={editMode === "GITHUB"} />
         <LogoutButton />
       </aside>
 

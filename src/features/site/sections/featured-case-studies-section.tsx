@@ -17,14 +17,14 @@ export function FeaturedCaseStudiesSection({
       <div className="case-grid">
         {caseStudies.slice(0, block.limit).map((caseStudy) => (
           <article className="case-card" key={caseStudy.id}>
-            <div className="meta-row">
+            <div className="meta-row card-meta-row">
               {caseStudy.tags.map((tag) => (
                 <span key={`${caseStudy.id}-${tag}`}>{tag}</span>
               ))}
             </div>
             <h3>{caseStudy.title}</h3>
             <p>{caseStudy.summary}</p>
-            <div className="meta-row">
+            <div className="meta-row card-meta-row">
               {caseStudy.links.map((link) => (
                 <Link className="accent-link" href={link.href} key={`${caseStudy.id}-${link.href}`}>
                   {link.label}
