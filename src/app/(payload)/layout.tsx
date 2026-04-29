@@ -26,7 +26,11 @@ const serverFunction: ServerFunctionClient = async (args) => {
 
 export default function PayloadLayout({ children }: { children: ReactNode }) {
   return (
-    <RootLayout config={configPromise} importMap={importMap} serverFunction={serverFunction}>
+    <RootLayout
+      config={configPromise}
+      importMap={importMap}
+      serverFunction={serverFunction}
+    >
       {children}
     </RootLayout>
   );
