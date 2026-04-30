@@ -233,6 +233,48 @@ export default async function HomePage() {
                   </Box>
                 );
 
+              case "featuredCaseStudies":
+                return (
+                  <Stack gap={6} key={`${block.blockType}-${index}`}>
+                    <Stack gap={3} maxW="3xl">
+                      <Heading as="h2" fontSize={{ base: "lg", md: "xl" }} letterSpacing="0">
+                        {block.heading}
+                      </Heading>
+                      {block.intro && (
+                        <Text color="muted" lineHeight="1.8">
+                          {block.intro}
+                        </Text>
+                      )}
+                    </Stack>
+                    <Grid gap={{ base: 5, md: 6 }} templateColumns={{ base: "1fr", md: "repeat(2, minmax(0, 1fr))" }}>
+                      {block.items.map((item) => (
+                        <Box
+                          borderWidth="1px"
+                          borderColor="edge"
+                          bg="surface"
+                          key={item.href}
+                          p={{ base: 6, md: 7 }}
+                          rounded="panel"
+                        >
+                          <Stack gap={3}>
+                            <Heading as="h3" fontSize="md" letterSpacing="0">
+                              <Link asChild textDecoration="none">
+                                <NextLink href={item.href}>{item.title}</NextLink>
+                              </Link>
+                            </Heading>
+                            <Text color="muted" fontSize="sm" lineHeight="1.8">
+                              {item.summary}
+                            </Text>
+                            <Link asChild color="accent" fontSize="sm" textDecoration="none">
+                              <NextLink href={item.href}>Open case study</NextLink>
+                            </Link>
+                          </Stack>
+                        </Box>
+                      ))}
+                    </Grid>
+                  </Stack>
+                );
+
               case "linkList":
                 return (
                   <Box

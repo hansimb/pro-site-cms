@@ -190,6 +190,38 @@ export const ContactCtaBlock: Block = {
   ],
 };
 
+export const FeaturedCaseStudiesBlock: Block = {
+  slug: "featuredCaseStudies",
+  fields: [
+    {
+      name: "heading",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "intro",
+      type: "textarea",
+    },
+    {
+      name: "items",
+      type: "relationship",
+      relationTo: "case-studies",
+      hasMany: true,
+      required: true,
+      admin: {
+        description: "Select 2-3 featured case studies for the homepage.",
+      },
+      validate: (value) => {
+        if (!Array.isArray(value) || value.length < 2 || value.length > 3) {
+          return "Select 2-3 case studies.";
+        }
+
+        return true;
+      },
+    },
+  ],
+};
+
 export const CalloutBlock: Block = {
   slug: "callout",
   fields: [
@@ -240,6 +272,7 @@ export const HomeBlocks = [
   HighlightsBlock,
   TimelineBlock,
   ContactCtaBlock,
+  FeaturedCaseStudiesBlock,
   CalloutBlock,
   LinkListBlock,
 ];

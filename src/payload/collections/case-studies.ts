@@ -3,7 +3,7 @@ import type { CollectionConfig } from "payload";
 export const CaseStudies: CollectionConfig = {
   slug: "case-studies",
   admin: {
-    defaultColumns: ["title", "featured", "updatedAt"],
+    defaultColumns: ["title", "updatedAt"],
     useAsTitle: "title",
   },
   versions: {
@@ -26,11 +26,6 @@ export const CaseStudies: CollectionConfig = {
       name: "summary",
       type: "textarea",
       required: true,
-    },
-    {
-      name: "featured",
-      type: "checkbox",
-      defaultValue: false,
     },
     {
       name: "content",

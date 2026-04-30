@@ -11,8 +11,8 @@ type RawHomeBlock = {
   featured?: unknown;
   heading?: unknown;
   intro?: unknown;
-  links?: unknown;
   items?: unknown;
+  links?: unknown;
   primaryLink?: unknown;
   quote?: unknown;
   role?: unknown;
@@ -30,6 +30,12 @@ type RawHighlightItem = {
 
 type RawTimelineItem = {
   period?: unknown;
+  summary?: unknown;
+  title?: unknown;
+};
+
+type RawCaseStudyItem = {
+  slug?: unknown;
   summary?: unknown;
   title?: unknown;
 };
@@ -90,6 +96,17 @@ export type HomeContactCtaBlock = {
   secondaryLink?: HomeLink;
 };
 
+export type HomeFeaturedCaseStudiesBlock = {
+  blockType: "featuredCaseStudies";
+  heading: string;
+  intro?: string;
+  items: Array<{
+    href: string;
+    summary: string;
+    title: string;
+  }>;
+};
+
 export type HomeCalloutBlock = {
   blockType: "callout";
   body: string;
@@ -109,6 +126,7 @@ export type HomePageContent = {
     | HomeHighlightsBlock
     | HomeTimelineBlock
     | HomeContactCtaBlock
+    | HomeFeaturedCaseStudiesBlock
     | HomeCalloutBlock
     | HomeLinkListBlock
   >;
@@ -155,6 +173,24 @@ function normalizeTimelineItem(value: unknown) {
 
   return {
     period: readString(item.period),
+    summary: readString(item.summary),
+    title: readString(item.title),
+  };
+}
+
+function normalizeFeaturedCaseStudyItem(value: unknown) {
+  const item = value as RawCaseStudyItem | string | number | null | undefined;
+
+  if (!item || typeof item === "string" || typeof item === "number") {
+    return undefined;
+  }
+
+  if (!item.slug || !item.title || !item.summary) {
+    return undefined;
+  }
+
+  return {
+    href: `/case-studies/${encodeURIComponent(readString(item.slug))}`,
     summary: readString(item.summary),
     title: readString(item.title),
   };
@@ -270,6 +306,23 @@ export function mapHomePageData(doc: unknown): HomePageContent {
             heading: readString(block.heading),
             primaryLink: normalizeLink(block.primaryLink),
             secondaryLink: normalizeLink(block.secondaryLink),
+          });
+        }
+        break;
+
+      case "featuredCaseStudies":
+        if (block.heading) {
+          result.push({
+            blockType: "featuredCaseStudies",
+            heading: readString(block.heading),
+            intro: block.intro ? readString(block.intro) : undefined,
+            items: Array.isArray(block.items)
+              ? block.items
+                  .map(normalizeFeaturedCaseStudyItem)
+                  .filter((value): value is NonNullable<typeof value> =>
+                    Boolean(value),
+                  )
+              : [],
           });
         }
         break;
