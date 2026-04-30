@@ -1,0 +1,93 @@
+import { describe, expect, it } from "vitest";
+import { HomeBlocks } from "../src/payload/blocks/home-blocks";
+import {
+  getDefaultHomePage,
+  mapHomePageData,
+} from "../src/features/site/data/home-page";
+
+describe("home page content mapping", () => {
+  it("keeps the current hero as a fallback when CMS hero content is missing", () => {
+    expect(getDefaultHomePage().hero).toMatchObject({
+      body: "The legacy custom CMS has been replaced by a Payload-first foundation. The interface is intentionally compact, angular, and product-like.",
+      eyebrow: "Payload-backed publishing system",
+      heading: "Minimal dark CMS architecture for a sharper professional site.",
+      showFeatured: true,
+    });
+  });
+
+  it("maps the hero featured switch and supplemental blocks from Payload", () => {
+    const homePage = mapHomePageData({
+      blocks: [
+        {
+          blockType: "hero",
+          eyebrow: "Studio",
+          heading: "Custom hero",
+          body: "Custom body",
+          featured: false,
+          primaryLink: {
+            href: "/writing",
+            label: "Open writing",
+          },
+        },
+        {
+          blockType: "text",
+          heading: "Intro",
+          body: "Text body",
+        },
+        {
+          blockType: "callout",
+          heading: "Signal",
+          body: "Callout body",
+        },
+        {
+          blockType: "linkList",
+          heading: "Explore",
+          links: [
+            {
+              href: "/case-studies",
+              label: "Case studies",
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(homePage.hero).toMatchObject({
+      eyebrow: "Studio",
+      heading: "Custom hero",
+      body: "Custom body",
+      showFeatured: false,
+    });
+    expect(homePage.blocks).toEqual([
+      {
+        blockType: "text",
+        body: "Text body",
+        heading: "Intro",
+      },
+      {
+        blockType: "callout",
+        body: "Callout body",
+        heading: "Signal",
+      },
+      {
+        blockType: "linkList",
+        heading: "Explore",
+        links: [
+          {
+            href: "/case-studies",
+            label: "Case studies",
+          },
+        ],
+      },
+    ]);
+  });
+
+  it("registers the extra home page block choices in Payload", () => {
+    expect(HomeBlocks.map((block) => block.slug)).toEqual([
+      "hero",
+      "text",
+      "callout",
+      "linkList",
+    ]);
+  });
+});

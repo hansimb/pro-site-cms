@@ -18,6 +18,12 @@ export const HeroBlock: Block = {
       required: true,
     },
     {
+      name: "featured",
+      type: "checkbox",
+      defaultValue: true,
+      label: "Show featured writing and case study cards",
+    },
+    {
       name: "primaryLink",
       type: "group",
       fields: [
@@ -50,4 +56,47 @@ export const TextBlock: Block = {
   ],
 };
 
-export const HomeBlocks = [HeroBlock, TextBlock];
+export const CalloutBlock: Block = {
+  slug: "callout",
+  fields: [
+    {
+      name: "heading",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "body",
+      type: "textarea",
+      required: true,
+    },
+  ],
+};
+
+export const LinkListBlock: Block = {
+  slug: "linkList",
+  fields: [
+    {
+      name: "heading",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "links",
+      type: "array",
+      fields: [
+        {
+          name: "label",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "href",
+          type: "text",
+          required: true,
+        },
+      ],
+    },
+  ],
+};
+
+export const HomeBlocks = [HeroBlock, TextBlock, CalloutBlock, LinkListBlock];

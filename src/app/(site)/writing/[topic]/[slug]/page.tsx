@@ -1,7 +1,8 @@
 import NextLink from "next/link";
 import { notFound } from "next/navigation";
-import { Box, Heading, Stack, Text, Button } from "@chakra-ui/react";
+import { Box, Heading, Link, Stack, Text, Button } from "@chakra-ui/react";
 import { getArticleBySlug } from "@/features/site/data/payload-site";
+import { RichTextContent } from "@/app/(site)/components/rich-text-content";
 
 interface ArticlePageProps {
   params: Promise<{ topic: string; slug: string }>;
@@ -39,20 +40,27 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         )}
       </Stack>
 
-      <Box maxW="4xl">
-        {/* TODO: Render rich text content */}
-        <Text color="muted">
-          Article content rendering will be implemented.
-        </Text>
-      </Box>
+      <RichTextContent content={article.content} />
 
       {article.references && article.references.length > 0 && (
         <Stack gap={3} maxW="4xl">
           <Heading as="h2" fontSize="lg" letterSpacing="0">
             References
           </Heading>
-          {/* TODO: Render references */}
-          <Text color="muted">References rendering will be implemented.</Text>
+          <Stack gap={2}>
+            {article.references.map((reference) => (
+              <Box key={`${reference.label}-${reference.url}`}>
+                <Link
+                  color="accent"
+                  href={reference.url}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {reference.label}
+                </Link>
+              </Box>
+            ))}
+          </Stack>
         </Stack>
       )}
     </Stack>

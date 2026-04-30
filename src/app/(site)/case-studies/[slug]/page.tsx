@@ -1,7 +1,8 @@
 import NextLink from "next/link";
 import { notFound } from "next/navigation";
-import { Box, Heading, Stack, Text, Button } from "@chakra-ui/react";
+import { Heading, Stack, Text, Button } from "@chakra-ui/react";
 import { getCaseStudyBySlug } from "@/features/site/data/payload-site";
+import { RichTextContent } from "@/app/(site)/components/rich-text-content";
 
 interface CaseStudyPageProps {
   params: Promise<{ slug: string }>;
@@ -31,33 +32,14 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         </Text>
       </Stack>
 
-      <Box maxW="4xl">
-        {/* TODO: Render rich text content */}
-        <Text color="muted">
-          Case study content rendering will be implemented.
-        </Text>
-      </Box>
+      <RichTextContent content={caseStudy.content} />
 
       {caseStudy.tags && caseStudy.tags.length > 0 && (
         <Stack gap={2} maxW="4xl">
-          <Heading as="h2" fontSize="lg" letterSpacing="0">
-            Tags
-          </Heading>
-          <Stack direction="row" flexWrap="wrap" gap={2}>
-            {caseStudy.tags.map((tag) => (
-              <Box
-                key={tag.id}
-                px={3}
-                py={1}
-                bg="accent"
-                color="accent.fg"
-                rounded="md"
-                fontSize="sm"
-              >
-                {tag.label}
-              </Box>
-            ))}
-          </Stack>
+          <Text fontWeight="semibold">Tags:</Text>
+          <Text color="muted" fontSize="sm">
+            {caseStudy.tags.map((tag) => `#${tag.label}`).join(" ")}
+          </Text>
         </Stack>
       )}
 

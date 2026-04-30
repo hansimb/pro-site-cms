@@ -55,7 +55,9 @@ export default async function WritingPage() {
                 h="auto"
                 p={4}
                 justifyContent="start"
-                _hover={{ bg: "accent", color: "accent.fg" }}
+                bg="surface"
+                borderColor="edge"
+                _hover={{ bg: "surfaceRaised", borderColor: "edge", color: "text" }}
               >
                 <NextLink href={`/writing/${encodeURIComponent(topic)}`}>
                   <Stack gap={1}>
