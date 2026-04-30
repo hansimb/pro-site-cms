@@ -7,62 +7,64 @@ export default async function HomePage() {
   const { hero, blocks } = site.homePage;
 
   return (
-    <Stack gap={10}>
-      <Stack gap={5} maxW="3xl">
-        <Text color="accent" fontSize="sm" fontWeight="700">
-          {hero.eyebrow}
-        </Text>
-        <Heading as="h1" fontSize={{ base: "2xl", md: "4xl" }} fontWeight="700" letterSpacing="0" lineHeight="1.1">
-          {hero.heading}
-        </Heading>
-        <Text color="muted" fontSize="md" lineHeight="1.7" maxW="2xl">
-          {hero.body}
-        </Text>
-        {hero.primaryLink && (
-          <Link asChild color="accent" fontSize="sm" textDecoration="none">
-            <NextLink href={hero.primaryLink.href}>{hero.primaryLink.label}</NextLink>
-          </Link>
+    <Stack gap={{ base: 14, md: 20 }}>
+      <Stack gap={{ base: 8, md: 10 }}>
+        <Stack gap={6} maxW="3xl">
+          <Text color="accent" fontSize="sm" fontWeight="700">
+            {hero.eyebrow}
+          </Text>
+          <Heading as="h1" fontSize={{ base: "2xl", md: "4xl" }} fontWeight="700" letterSpacing="0" lineHeight="1.1">
+            {hero.heading}
+          </Heading>
+          <Text color="muted" fontSize="md" lineHeight="1.7" maxW="2xl">
+            {hero.body}
+          </Text>
+          {hero.primaryLink && (
+            <Link asChild color="accent" fontSize="sm" textDecoration="none">
+              <NextLink href={hero.primaryLink.href}>{hero.primaryLink.label}</NextLink>
+            </Link>
+          )}
+        </Stack>
+
+        {hero.showFeatured && (
+          <Grid gap={{ base: 5, md: 6 }} templateColumns={{ base: "1fr", md: "repeat(2, minmax(0, 1fr))" }}>
+            <Box borderWidth="1px" borderColor="edge" bg="surface" p={{ base: 6, md: 7 }} rounded="panel">
+              <Stack gap={3}>
+                <Heading as="h2" fontSize="md" letterSpacing="0">
+                  Writing
+                </Heading>
+                <Text color="muted" fontSize="sm">
+                  {site.articles.length} articles ready from the new content surface.
+                </Text>
+                <Link asChild color="accent" fontSize="sm" textDecoration="none">
+                  <NextLink href="/writing">Open writing</NextLink>
+                </Link>
+              </Stack>
+            </Box>
+            <Box borderWidth="1px" borderColor="edge" bg="surface" p={{ base: 6, md: 7 }} rounded="panel">
+              <Stack gap={3}>
+                <Heading as="h2" fontSize="md" letterSpacing="0">
+                  Case studies
+                </Heading>
+                <Text color="muted" fontSize="sm">
+                  {site.caseStudies.length} case studies ready from the new content surface.
+                </Text>
+                <Link asChild color="accent" fontSize="sm" textDecoration="none">
+                  <NextLink href="/case-studies">Open case studies</NextLink>
+                </Link>
+              </Stack>
+            </Box>
+          </Grid>
         )}
       </Stack>
 
-      {hero.showFeatured && (
-        <Grid gap={4} templateColumns={{ base: "1fr", md: "repeat(2, minmax(0, 1fr))" }}>
-          <Box borderWidth="1px" borderColor="edge" bg="surface" p={5} rounded="panel">
-            <Stack gap={3}>
-              <Heading as="h2" fontSize="md" letterSpacing="0">
-                Writing
-              </Heading>
-              <Text color="muted" fontSize="sm">
-                {site.articles.length} articles ready from the new content surface.
-              </Text>
-              <Link asChild color="accent" fontSize="sm" textDecoration="none">
-                <NextLink href="/writing">Open writing</NextLink>
-              </Link>
-            </Stack>
-          </Box>
-          <Box borderWidth="1px" borderColor="edge" bg="surface" p={5} rounded="panel">
-            <Stack gap={3}>
-              <Heading as="h2" fontSize="md" letterSpacing="0">
-                Case studies
-              </Heading>
-              <Text color="muted" fontSize="sm">
-                {site.caseStudies.length} case studies ready from the new content surface.
-              </Text>
-              <Link asChild color="accent" fontSize="sm" textDecoration="none">
-                <NextLink href="/case-studies">Open case studies</NextLink>
-              </Link>
-            </Stack>
-          </Box>
-        </Grid>
-      )}
-
       {blocks.length > 0 && (
-        <Stack gap={4}>
+        <Stack gap={{ base: 10, md: 14 }}>
           {blocks.map((block, index) => {
             switch (block.blockType) {
               case "text":
                 return (
-                  <Stack gap={3} key={`${block.blockType}-${index}`} maxW="3xl">
+                  <Stack gap={4} key={`${block.blockType}-${index}`} maxW="3xl">
                     <Heading as="h2" fontSize={{ base: "lg", md: "xl" }} letterSpacing="0">
                       {block.heading}
                     </Heading>
@@ -79,10 +81,10 @@ export default async function HomePage() {
                     borderWidth="1px"
                     borderColor="edge"
                     bg="surfaceRaised"
-                    p={5}
+                    p={{ base: 6, md: 7 }}
                     rounded="panel"
                   >
-                    <Stack gap={2} maxW="3xl">
+                    <Stack gap={3} maxW="3xl">
                       <Heading as="h2" fontSize="md" letterSpacing="0">
                         {block.heading}
                       </Heading>
@@ -118,8 +120,8 @@ export default async function HomePage() {
 
               case "highlights":
                 return (
-                  <Stack gap={4} key={`${block.blockType}-${index}`}>
-                    <Stack gap={2} maxW="3xl">
+                  <Stack gap={6} key={`${block.blockType}-${index}`}>
+                    <Stack gap={3} maxW="3xl">
                       <Heading as="h2" fontSize={{ base: "lg", md: "xl" }} letterSpacing="0">
                         {block.heading}
                       </Heading>
@@ -129,17 +131,17 @@ export default async function HomePage() {
                         </Text>
                       )}
                     </Stack>
-                    <Grid gap={4} templateColumns={{ base: "1fr", md: "repeat(2, minmax(0, 1fr))" }}>
+                    <Grid gap={{ base: 5, md: 6 }} templateColumns={{ base: "1fr", md: "repeat(2, minmax(0, 1fr))" }}>
                       {block.items.map((item, itemIndex) => (
                         <Box
                           key={`${item.title}-${itemIndex}`}
                           borderWidth="1px"
                           borderColor="edge"
                           bg="surface"
-                          p={5}
+                          p={{ base: 6, md: 7 }}
                           rounded="panel"
                         >
-                          <Stack gap={2}>
+                          <Stack gap={3}>
                             {item.eyebrow && (
                               <Text color="accent" fontSize="xs" fontWeight="700" textTransform="uppercase">
                                 {item.eyebrow}
@@ -160,8 +162,8 @@ export default async function HomePage() {
 
               case "timeline":
                 return (
-                  <Stack gap={4} key={`${block.blockType}-${index}`}>
-                    <Stack gap={2} maxW="3xl">
+                  <Stack gap={6} key={`${block.blockType}-${index}`}>
+                    <Stack gap={3} maxW="3xl">
                       <Heading as="h2" fontSize={{ base: "lg", md: "xl" }} letterSpacing="0">
                         {block.heading}
                       </Heading>
@@ -171,15 +173,15 @@ export default async function HomePage() {
                         </Text>
                       )}
                     </Stack>
-                    <Stack gap={3}>
+                    <Stack gap={6}>
                       {block.items.map((item, itemIndex) => (
                         <Box
                           key={`${item.period}-${item.title}-${itemIndex}`}
                           borderLeftWidth="1px"
                           borderColor="edge"
-                          pl={4}
+                          pl={{ base: 5, md: 6 }}
                         >
-                          <Stack gap={1} py={1}>
+                          <Stack gap={2} py={1}>
                             <Text color="accent" fontSize="xs" fontWeight="700" textTransform="uppercase">
                               {item.period}
                             </Text>
@@ -203,11 +205,11 @@ export default async function HomePage() {
                     borderWidth="1px"
                     borderColor="edge"
                     bg="surfaceRaised"
-                    p={{ base: 5, md: 6 }}
+                    p={{ base: 6, md: 8 }}
                     rounded="panel"
                   >
-                    <Stack gap={4} maxW="3xl">
-                      <Stack gap={2}>
+                    <Stack gap={5} maxW="3xl">
+                      <Stack gap={3}>
                         <Heading as="h2" fontSize={{ base: "lg", md: "xl" }} letterSpacing="0">
                           {block.heading}
                         </Heading>
@@ -221,9 +223,9 @@ export default async function HomePage() {
                             <NextLink href={block.primaryLink.href}>{block.primaryLink.label}</NextLink>
                           </Link>
                         )}
-                        {block.secondaryLink && (
-                          <Link asChild color="muted" fontSize="sm" textDecoration="none">
-                            <NextLink href={block.secondaryLink.href}>{block.secondaryLink.label}</NextLink>
+                          {block.secondaryLink && (
+                            <Link asChild color="muted" fontSize="sm" textDecoration="none">
+                              <NextLink href={block.secondaryLink.href}>{block.secondaryLink.label}</NextLink>
                           </Link>
                         )}
                       </Stack>
@@ -238,10 +240,10 @@ export default async function HomePage() {
                     borderWidth="1px"
                     borderColor="edge"
                     bg="surface"
-                    p={5}
+                    p={{ base: 6, md: 7 }}
                     rounded="panel"
                   >
-                    <Stack gap={3}>
+                    <Stack gap={4}>
                       <Heading as="h2" fontSize="md" letterSpacing="0">
                         {block.heading}
                       </Heading>
