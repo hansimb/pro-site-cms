@@ -13,7 +13,13 @@ export function SiteNavigation({ navigation }: SiteNavigationProps) {
   const pathname = usePathname();
 
   return (
-    <Flex align="center" gap={{ base: 3, md: 5 }} wrap="wrap">
+    <Flex
+      align="center"
+      flexShrink={0}
+      gap={{ base: 2, md: 5 }}
+      wrap="nowrap"
+      whiteSpace="nowrap"
+    >
       {navigation.map((item) => {
         const isActive =
           pathname === item.href ||
@@ -22,7 +28,7 @@ export function SiteNavigation({ navigation }: SiteNavigationProps) {
           <Link
             asChild
             color={isActive ? "accent" : "muted"}
-            fontSize="sm"
+            fontSize={{ base: "xs", md: "sm" }}
             key={item.href}
             textDecoration="none"
             _hover={{ color: "accent" }}

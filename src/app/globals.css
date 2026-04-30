@@ -18,6 +18,42 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@keyframes panel-border-glide {
+  0% {
+    left: -22%;
+    opacity: 0;
+  }
+
+  18% {
+    opacity: 0.95;
+  }
+
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes timeline-flow {
+  0%,
+  100% {
+    transform: scale(1.04);
+    opacity: 0.96;
+    box-shadow:
+      0 0 0 2px rgba(0, 255, 136, 0.1),
+      0 0 14px rgba(0, 255, 136, 0.28);
+  }
+
+  34%,
+  46% {
+    transform: scale(0.98);
+    opacity: 0.18;
+    box-shadow:
+      0 0 0 1px rgba(0, 255, 136, 0.02),
+      0 0 4px rgba(0, 255, 136, 0.06);
+  }
+}
+
 * {
   box-sizing: border-box;
 }

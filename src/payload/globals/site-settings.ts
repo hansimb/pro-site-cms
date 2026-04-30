@@ -10,6 +10,10 @@ export const SiteSettings: GlobalConfig = {
       required: true,
     },
     {
+      name: "siteSubtitle",
+      type: "text",
+    },
+    {
       name: "siteDescription",
       type: "textarea",
       defaultValue: "A minimal dark CMS-backed site.",

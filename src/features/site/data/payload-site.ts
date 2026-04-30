@@ -14,6 +14,7 @@ type RawNavigationItem = {
 type RawSiteSettings = {
   navigation?: unknown;
   siteDescription?: unknown;
+  siteSubtitle?: unknown;
   siteTitle?: unknown;
 };
 
@@ -92,6 +93,7 @@ export type SiteModel = {
   navigation: SiteNavigationItem[];
   settings: {
     siteDescription: string;
+    siteSubtitle?: string;
     siteTitle: string;
   };
   topics: string[];
@@ -159,6 +161,7 @@ export function getFallbackSiteModel(): SiteModel {
     ],
     settings: {
       siteDescription: "A minimal dark CMS-backed site.",
+      siteSubtitle: undefined,
       siteTitle: "Pro Site CMS",
     },
     topics: [],
@@ -228,6 +231,11 @@ export async function getSiteModel() {
     return {
       settings: {
         siteTitle: String(settingsData?.siteTitle ?? "Pro Site CMS"),
+        siteSubtitle:
+          typeof settingsData?.siteSubtitle === "string" &&
+          settingsData.siteSubtitle.trim().length > 0
+            ? settingsData.siteSubtitle
+            : undefined,
         siteDescription: String(
           settingsData?.siteDescription ?? "A minimal dark CMS-backed site.",
         ),
