@@ -209,11 +209,11 @@ export const FeaturedCaseStudiesBlock: Block = {
       hasMany: true,
       required: true,
       admin: {
-        description: "Select 2-3 featured case studies for the homepage.",
+        description: "Select 2-6 featured case studies for the homepage.",
       },
       validate: (value) => {
-        if (!Array.isArray(value) || value.length < 2 || value.length > 3) {
-          return "Select 2-3 case studies.";
+        if (!Array.isArray(value) || value.length < 2 || value.length > 6) {
+          return "Select 2-6 case studies.";
         }
 
         return true;
