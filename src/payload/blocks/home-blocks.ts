@@ -56,6 +56,140 @@ export const TextBlock: Block = {
   ],
 };
 
+export const QuoteBlock: Block = {
+  slug: "quote",
+  fields: [
+    {
+      name: "quote",
+      type: "textarea",
+      required: true,
+    },
+    {
+      name: "attribution",
+      type: "text",
+    },
+    {
+      name: "role",
+      type: "text",
+    },
+  ],
+};
+
+export const HighlightsBlock: Block = {
+  slug: "highlights",
+  fields: [
+    {
+      name: "heading",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "intro",
+      type: "textarea",
+    },
+    {
+      name: "items",
+      type: "array",
+      fields: [
+        {
+          name: "eyebrow",
+          type: "text",
+        },
+        {
+          name: "title",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "body",
+          type: "textarea",
+          required: true,
+        },
+      ],
+    },
+  ],
+};
+
+export const TimelineBlock: Block = {
+  slug: "timeline",
+  fields: [
+    {
+      name: "heading",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "intro",
+      type: "textarea",
+    },
+    {
+      name: "items",
+      type: "array",
+      fields: [
+        {
+          name: "period",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "title",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "summary",
+          type: "textarea",
+          required: true,
+        },
+      ],
+    },
+  ],
+};
+
+export const ContactCtaBlock: Block = {
+  slug: "contactCta",
+  fields: [
+    {
+      name: "heading",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "body",
+      type: "textarea",
+      required: true,
+    },
+    {
+      name: "primaryLink",
+      type: "group",
+      fields: [
+        {
+          name: "label",
+          type: "text",
+        },
+        {
+          name: "href",
+          type: "text",
+        },
+      ],
+    },
+    {
+      name: "secondaryLink",
+      type: "group",
+      fields: [
+        {
+          name: "label",
+          type: "text",
+        },
+        {
+          name: "href",
+          type: "text",
+        },
+      ],
+    },
+  ],
+};
+
 export const CalloutBlock: Block = {
   slug: "callout",
   fields: [
@@ -99,4 +233,13 @@ export const LinkListBlock: Block = {
   ],
 };
 
-export const HomeBlocks = [HeroBlock, TextBlock, CalloutBlock, LinkListBlock];
+export const HomeBlocks = [
+  HeroBlock,
+  TextBlock,
+  QuoteBlock,
+  HighlightsBlock,
+  TimelineBlock,
+  ContactCtaBlock,
+  CalloutBlock,
+  LinkListBlock,
+];

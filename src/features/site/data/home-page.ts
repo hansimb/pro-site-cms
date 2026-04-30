@@ -4,13 +4,34 @@ type RawLink = {
 };
 
 type RawHomeBlock = {
+  attribution?: unknown;
   blockType?: unknown;
   body?: unknown;
   eyebrow?: unknown;
   featured?: unknown;
   heading?: unknown;
+  intro?: unknown;
   links?: unknown;
+  items?: unknown;
   primaryLink?: unknown;
+  quote?: unknown;
+  role?: unknown;
+  secondaryLink?: unknown;
+  summary?: unknown;
+  period?: unknown;
+  title?: unknown;
+};
+
+type RawHighlightItem = {
+  body?: unknown;
+  eyebrow?: unknown;
+  title?: unknown;
+};
+
+type RawTimelineItem = {
+  period?: unknown;
+  summary?: unknown;
+  title?: unknown;
 };
 
 export type HomeLink = {
@@ -32,6 +53,43 @@ export type HomeTextBlock = {
   heading: string;
 };
 
+export type HomeQuoteBlock = {
+  attribution?: string;
+  blockType: "quote";
+  role?: string;
+  quote: string;
+};
+
+export type HomeHighlightsBlock = {
+  blockType: "highlights";
+  heading: string;
+  intro?: string;
+  items: Array<{
+    body: string;
+    eyebrow?: string;
+    title: string;
+  }>;
+};
+
+export type HomeTimelineBlock = {
+  blockType: "timeline";
+  heading: string;
+  intro?: string;
+  items: Array<{
+    period: string;
+    summary: string;
+    title: string;
+  }>;
+};
+
+export type HomeContactCtaBlock = {
+  blockType: "contactCta";
+  body: string;
+  heading: string;
+  primaryLink?: HomeLink;
+  secondaryLink?: HomeLink;
+};
+
 export type HomeCalloutBlock = {
   blockType: "callout";
   body: string;
@@ -45,7 +103,15 @@ export type HomeLinkListBlock = {
 };
 
 export type HomePageContent = {
-  blocks: Array<HomeTextBlock | HomeCalloutBlock | HomeLinkListBlock>;
+  blocks: Array<
+    | HomeTextBlock
+    | HomeQuoteBlock
+    | HomeHighlightsBlock
+    | HomeTimelineBlock
+    | HomeContactCtaBlock
+    | HomeCalloutBlock
+    | HomeLinkListBlock
+  >;
   hero: HomeHero;
 };
 
@@ -63,6 +129,34 @@ function normalizeLink(value: unknown): HomeLink | undefined {
   return {
     href: String(link.href),
     label: String(link.label),
+  };
+}
+
+function normalizeHighlightItem(value: unknown) {
+  const item = value as RawHighlightItem | null | undefined;
+
+  if (!item?.title || !item?.body) {
+    return undefined;
+  }
+
+  return {
+    body: readString(item.body),
+    eyebrow: item.eyebrow ? readString(item.eyebrow) : undefined,
+    title: readString(item.title),
+  };
+}
+
+function normalizeTimelineItem(value: unknown) {
+  const item = value as RawTimelineItem | null | undefined;
+
+  if (!item?.period || !item?.title || !item?.summary) {
+    return undefined;
+  }
+
+  return {
+    period: readString(item.period),
+    summary: readString(item.summary),
+    title: readString(item.title),
   };
 }
 
@@ -117,6 +211,65 @@ export function mapHomePageData(doc: unknown): HomePageContent {
             blockType: "callout",
             heading: readString(block.heading),
             body: readString(block.body),
+          });
+        }
+        break;
+
+      case "quote":
+        if (block.quote) {
+          result.push({
+            blockType: "quote",
+            attribution: block.attribution
+              ? readString(block.attribution)
+              : undefined,
+            quote: readString(block.quote),
+            role: block.role ? readString(block.role) : undefined,
+          });
+        }
+        break;
+
+      case "highlights":
+        if (block.heading) {
+          result.push({
+            blockType: "highlights",
+            heading: readString(block.heading),
+            intro: block.intro ? readString(block.intro) : undefined,
+            items: Array.isArray(block.items)
+              ? block.items
+                  .map(normalizeHighlightItem)
+                  .filter((value): value is NonNullable<typeof value> =>
+                    Boolean(value),
+                  )
+              : [],
+          });
+        }
+        break;
+
+      case "timeline":
+        if (block.heading) {
+          result.push({
+            blockType: "timeline",
+            heading: readString(block.heading),
+            intro: block.intro ? readString(block.intro) : undefined,
+            items: Array.isArray(block.items)
+              ? block.items
+                  .map(normalizeTimelineItem)
+                  .filter((value): value is NonNullable<typeof value> =>
+                    Boolean(value),
+                  )
+              : [],
+          });
+        }
+        break;
+
+      case "contactCta":
+        if (block.heading && block.body) {
+          result.push({
+            blockType: "contactCta",
+            body: readString(block.body),
+            heading: readString(block.heading),
+            primaryLink: normalizeLink(block.primaryLink),
+            secondaryLink: normalizeLink(block.secondaryLink),
           });
         }
         break;

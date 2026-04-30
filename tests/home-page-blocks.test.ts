@@ -40,6 +40,44 @@ describe("home page content mapping", () => {
           body: "Callout body",
         },
         {
+          blockType: "quote",
+          quote: "Less hype, more doing.",
+          attribution: "Hans Imberg",
+          role: "Builder",
+        },
+        {
+          blockType: "highlights",
+          heading: "Highlights",
+          intro: "What I bring quickly.",
+          items: [
+            {
+              eyebrow: "Capability",
+              title: "Systems thinking",
+              body: "From architecture to delivery.",
+            },
+          ],
+        },
+        {
+          blockType: "timeline",
+          heading: "Timeline",
+          items: [
+            {
+              period: "Now",
+              title: "CS + applied projects",
+              summary: "Building real systems across domains.",
+            },
+          ],
+        },
+        {
+          blockType: "contactCta",
+          heading: "Let us build",
+          body: "Open to interesting projects.",
+          primaryLink: {
+            href: "mailto:test@example.com",
+            label: "Email me",
+          },
+        },
+        {
           blockType: "linkList",
           heading: "Explore",
           links: [
@@ -70,6 +108,44 @@ describe("home page content mapping", () => {
         heading: "Signal",
       },
       {
+        attribution: "Hans Imberg",
+        blockType: "quote",
+        quote: "Less hype, more doing.",
+        role: "Builder",
+      },
+      {
+        blockType: "highlights",
+        heading: "Highlights",
+        intro: "What I bring quickly.",
+        items: [
+          {
+            body: "From architecture to delivery.",
+            eyebrow: "Capability",
+            title: "Systems thinking",
+          },
+        ],
+      },
+      {
+        blockType: "timeline",
+        heading: "Timeline",
+        items: [
+          {
+            period: "Now",
+            summary: "Building real systems across domains.",
+            title: "CS + applied projects",
+          },
+        ],
+      },
+      {
+        blockType: "contactCta",
+        body: "Open to interesting projects.",
+        heading: "Let us build",
+        primaryLink: {
+          href: "mailto:test@example.com",
+          label: "Email me",
+        },
+      },
+      {
         blockType: "linkList",
         heading: "Explore",
         links: [
@@ -86,6 +162,10 @@ describe("home page content mapping", () => {
     expect(HomeBlocks.map((block) => block.slug)).toEqual([
       "hero",
       "text",
+      "quote",
+      "highlights",
+      "timeline",
+      "contactCta",
       "callout",
       "linkList",
     ]);
