@@ -21,16 +21,33 @@ export default async function CaseStudiesPage() {
           </Box>
         ) : (
           site.caseStudies.map((caseStudy) => (
-            <Box borderWidth="1px" borderColor="edge" key={caseStudy.href} p={5} rounded="panel">
-              <Heading as="h2" fontSize="md" letterSpacing="0">
-                <Link asChild color="text" textDecoration="none" _hover={{ color: "accent" }}>
-                  <NextLink href={caseStudy.href}>{caseStudy.title}</NextLink>
-                </Link>
-              </Heading>
-              <Text color="muted" fontSize="sm">
-                {caseStudy.summary}
-              </Text>
-            </Box>
+            <Link
+              key={caseStudy.href}
+              asChild
+              color="text"
+              textDecoration="none"
+              _hover={{ textDecoration: "none" }}
+            >
+              <NextLink href={caseStudy.href}>
+                <Box
+                  as="article"
+                  w="100%"
+                  borderWidth="1px"
+                  borderColor="edge"
+                  p={5}
+                  rounded="panel"
+                  bg="surface"
+                  _hover={{ bg: "surfaceRaised", borderColor: "accent" }}
+                >
+                  <Heading as="h2" fontSize="md" letterSpacing="0">
+                    {caseStudy.title}
+                  </Heading>
+                  <Text color="muted" fontSize="sm">
+                    {caseStudy.summary}
+                  </Text>
+                </Box>
+              </NextLink>
+            </Link>
           ))
         )}
       </Stack>

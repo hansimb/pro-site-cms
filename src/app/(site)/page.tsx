@@ -5,8 +5,7 @@ import { getSiteModel } from "@/features/site/data/payload-site";
 const interactivePanelProps = {
   position: "relative" as const,
   overflow: "hidden" as const,
-  transition:
-    "transform 180ms ease, border-color 180ms ease, box-shadow 220ms ease, background-color 220ms ease",
+  transition: "border-color 180ms ease",
   _before: {
     content: '""',
     position: "absolute" as const,
@@ -15,27 +14,8 @@ const interactivePanelProps = {
       "linear-gradient(135deg, rgba(255,255,255,0.022), transparent 40%, transparent 100%)",
     pointerEvents: "none" as const,
   },
-  _after: {
-    content: '""',
-    position: "absolute" as const,
-    top: "-1px",
-    left: "-22%",
-    width: "22%",
-    height: "1px",
-    transform: "none",
-    background:
-      "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.9) 50%, transparent 100%)",
-    opacity: 0,
-    pointerEvents: "none" as const,
-  },
   _hover: {
-    transform: "translateY(-2px)",
     borderColor: "rgba(255, 255, 255, 0.16)",
-    boxShadow: "0 16px 28px rgba(0, 0, 0, 0.22)",
-    _after: {
-      opacity: 1,
-      animation: "panel-border-glide 900ms cubic-bezier(0.22, 1, 0.36, 1)",
-    },
   },
 };
 
@@ -277,6 +257,7 @@ export default async function HomePage() {
                       bg="surfaceRaised"
                       p={{ base: 6, md: 8 }}
                       rounded="panel"
+                      {...interactivePanelProps}
                     >
                       <Stack gap={5} maxW="3xl">
                         <Stack gap={3}>

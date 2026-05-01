@@ -52,27 +52,33 @@ export default async function TopicPage({ params }: TopicPageProps) {
           </Box>
         ) : (
           articles.map((article) => (
-            <Box
-              borderWidth="1px"
-              borderColor="edge"
+            <Link
               key={article.href}
-              p={5}
-              rounded="panel"
+              asChild
+              color="text"
+              textDecoration="none"
+              _hover={{ textDecoration: "none" }}
             >
-              <Heading as="h2" fontSize="md" letterSpacing="0">
-                <Link
-                  asChild
-                  color="text"
-                  textDecoration="none"
-                  _hover={{ color: "accent" }}
+              <NextLink href={article.href}>
+                <Box
+                  as="article"
+                  w="100%"
+                  borderWidth="1px"
+                  borderColor="edge"
+                  p={5}
+                  rounded="panel"
+                  bg="surface"
+                  _hover={{ bg: "surfaceRaised", borderColor: "accent" }}
                 >
-                  <NextLink href={article.href}>{article.title}</NextLink>
-                </Link>
-              </Heading>
-              <Text color="muted" fontSize="sm" mt={1}>
-                {article.excerpt}
-              </Text>
-            </Box>
+                  <Heading as="h2" fontSize="md" letterSpacing="0">
+                    {article.title}
+                  </Heading>
+                  <Text color="muted" fontSize="sm" mt={1}>
+                    {article.excerpt}
+                  </Text>
+                </Box>
+              </NextLink>
+            </Link>
           ))
         )}
       </Stack>
