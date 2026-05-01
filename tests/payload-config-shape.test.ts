@@ -17,4 +17,27 @@ describe("payload config shape", () => {
 
     expect(config.admin.suppressHydrationWarning).toBe(true);
   });
+
+  it("uses a standardized structure for case studies", async () => {
+    const config = await configPromise;
+    const caseStudies = config.collections?.find(
+      (collection) => collection.slug === "case-studies",
+    );
+
+    expect(caseStudies?.fields.map((field) => ("name" in field ? field.name : undefined))).toEqual(
+      expect.arrayContaining([
+        "title",
+        "slug",
+        "summary",
+        "background",
+        "problem",
+        "solution",
+        "process",
+        "results",
+        "whatILearned",
+        "links",
+        "tags",
+      ]),
+    );
+  });
 });

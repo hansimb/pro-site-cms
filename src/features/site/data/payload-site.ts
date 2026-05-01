@@ -29,12 +29,18 @@ type RawArticleDoc = {
 };
 
 type RawCaseStudyDoc = {
+  background?: unknown;
   content?: unknown;
   links?: unknown;
+  problem?: unknown;
+  process?: unknown;
+  results?: unknown;
   slug?: unknown;
+  solution?: unknown;
   summary?: unknown;
   tags?: unknown;
   title?: unknown;
+  whatILearned?: unknown;
 };
 
 type RawReference = {
@@ -79,11 +85,17 @@ export type SiteArticle = {
 };
 
 export type SiteCaseStudy = {
+  background: string;
   content: unknown;
   links?: Array<{ label: string; href: string }>;
+  problem: string;
+  process: string;
+  results: string;
   summary: string;
+  solution: string;
   tags?: Array<{ label: string }>;
   title: string;
+  whatILearned: string;
 };
 
 export type SiteModel = {
@@ -351,9 +363,14 @@ export async function getCaseStudyBySlug(
     if (!doc) return null;
 
     return {
+      background: String(doc.background ?? ""),
       title: String(doc.title ?? ""),
       summary: String(doc.summary ?? ""),
       content: doc.content,
+      problem: String(doc.problem ?? ""),
+      process: String(doc.process ?? ""),
+      results: String(doc.results ?? ""),
+      solution: String(doc.solution ?? ""),
       links: Array.isArray(doc.links)
         ? doc.links.flatMap((link) =>
             (() => {
@@ -365,6 +382,7 @@ export async function getCaseStudyBySlug(
             })(),
           )
         : [],
+      whatILearned: String(doc.whatILearned ?? ""),
       tags: Array.isArray(doc.tags)
         ? doc.tags.flatMap((tag) =>
             (() => {

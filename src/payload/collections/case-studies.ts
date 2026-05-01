@@ -28,9 +28,42 @@ export const CaseStudies: CollectionConfig = {
       required: true,
     },
     {
+      name: "background",
+      type: "textarea",
+      required: true,
+    },
+    {
+      name: "problem",
+      type: "textarea",
+      required: true,
+    },
+    {
+      name: "solution",
+      type: "textarea",
+      required: true,
+    },
+    {
+      name: "process",
+      type: "textarea",
+      required: true,
+    },
+    {
+      name: "results",
+      type: "textarea",
+      required: true,
+    },
+    {
+      name: "whatILearned",
+      type: "textarea",
+      label: "What I learned",
+      required: true,
+    },
+    {
       name: "content",
       type: "richText",
-      required: true,
+      admin: {
+        hidden: true,
+      },
     },
     {
       name: "links",

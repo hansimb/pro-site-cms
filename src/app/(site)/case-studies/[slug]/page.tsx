@@ -2,7 +2,6 @@ import NextLink from "next/link";
 import { notFound } from "next/navigation";
 import { Heading, Stack, Text, Button } from "@chakra-ui/react";
 import { getCaseStudyBySlug } from "@/features/site/data/payload-site";
-import { RichTextContent } from "@/app/(site)/components/rich-text-content";
 
 interface CaseStudyPageProps {
   params: Promise<{ slug: string }>;
@@ -32,7 +31,25 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
         </Text>
       </Stack>
 
-      <RichTextContent content={caseStudy.content} />
+      <Stack gap={4} maxW="4xl">
+        {[
+          ["Background", caseStudy.background],
+          ["Problem", caseStudy.problem],
+          ["Solution", caseStudy.solution],
+          ["Process", caseStudy.process],
+          ["Results", caseStudy.results],
+          ["What I learned", caseStudy.whatILearned],
+        ].map(([label, value]) => (
+          <Text key={label} lineHeight={1.8}>
+            <Text as="span" fontWeight="semibold" color="text">
+              {label}:
+            </Text>{" "}
+            <Text as="span" color="muted">
+              {value}
+            </Text>
+          </Text>
+        ))}
+      </Stack>
 
       {caseStudy.tags && caseStudy.tags.length > 0 && (
         <Stack gap={2} maxW="4xl">

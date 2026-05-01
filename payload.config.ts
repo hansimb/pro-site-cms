@@ -44,6 +44,7 @@ export default buildConfig({
   },
   collections: [Users, Media, Articles, CaseStudies],
   db: postgresAdapter({
+    migrationDir: path.resolve(dirname, "src/migrations"),
     pool: {
       connectionString: payloadEnvironment.databaseUrl,
     },
