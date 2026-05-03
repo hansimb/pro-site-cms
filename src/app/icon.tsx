@@ -15,15 +15,17 @@ export default function Icon() {
           alignItems: "center",
           background:
             "linear-gradient(135deg, #050505 0%, #0f0f0f 55%, #161616 100%)",
-          border: "2px solid #00ff88",
+          borderRadius: 14,
           color: "#f4f4f4",
           display: "flex",
           fontFamily: "Arial, sans-serif",
-          fontSize: 30,
+          fontSize: 40,
           fontWeight: 700,
           height: "100%",
           justifyContent: "center",
-          letterSpacing: "-0.08em",
+          letterSpacing: "0.02em",
+          lineHeight: 1,
+          paddingBottom: 1,
           width: "100%",
         }}
       >
