@@ -6,7 +6,11 @@ describe("github stats compaction", () => {
     expect(
       compactGithubStats([
         { key: "publicRepos", label: "Repositories", value: "24" },
-        { key: "contributions", label: "Contributions", value: undefined },
+        {
+          key: "contributionsYear",
+          label: "Contributions in the last year",
+          value: undefined,
+        },
         { key: "codingTime", label: "Hours", value: undefined },
       ]),
     ).toEqual([{ key: "publicRepos", label: "Repositories", value: "24" }]);
@@ -16,7 +20,11 @@ describe("github stats compaction", () => {
     expect(
       compactGithubStats([
         { key: "publicRepos", label: "Repositories", value: undefined },
-        { key: "contributions", label: "Contributions", value: undefined },
+        {
+          key: "contributionsAllTime",
+          label: "All-time contributions",
+          value: undefined,
+        },
       ]),
     ).toEqual([]);
   });

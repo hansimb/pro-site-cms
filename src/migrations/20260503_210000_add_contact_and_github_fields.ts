@@ -29,9 +29,12 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
         "intro" varchar,
         "cta_label" varchar,
         "cta_url" varchar,
+        "stats_repo_url" varchar,
         "show_public_repos" boolean,
         "show_contributions" boolean,
+        "contribution_window" varchar,
         "show_coding_time" boolean,
+        "show_production_deployments" boolean,
         "block_name" varchar
       )
     `,
@@ -40,9 +43,12 @@ export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
   await db.execute(
     sql`
       ALTER TABLE ${sql.identifier("home_page_blocks_github_profile")}
+      ADD COLUMN IF NOT EXISTS "stats_repo_url" varchar,
       ADD COLUMN IF NOT EXISTS "show_public_repos" boolean,
       ADD COLUMN IF NOT EXISTS "show_contributions" boolean,
-      ADD COLUMN IF NOT EXISTS "show_coding_time" boolean
+      ADD COLUMN IF NOT EXISTS "contribution_window" varchar,
+      ADD COLUMN IF NOT EXISTS "show_coding_time" boolean,
+      ADD COLUMN IF NOT EXISTS "show_production_deployments" boolean
     `,
   );
 

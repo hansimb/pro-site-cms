@@ -1,5 +1,10 @@
 export type GithubStatCard = {
-  key: "publicRepos" | "contributions" | "codingTime";
+  key:
+    | "publicRepos"
+    | "contributionsYear"
+    | "contributionsAllTime"
+    | "codingTime"
+    | "productionDeployments";
   label: string;
   value?: string;
 };
@@ -26,6 +31,30 @@ type WakatimeResponse = {
     total_seconds?: unknown;
   };
 };
+
+function parseGithubRepository(repoUrl?: string):
+  | { owner: string; repo: string }
+  | undefined {
+  if (!repoUrl) {
+    return undefined;
+  }
+
+  try {
+    const url = new URL(repoUrl);
+    const [owner, repo] = url.pathname.split("/").filter(Boolean);
+
+    if (!owner || !repo) {
+      return undefined;
+    }
+
+    return {
+      owner,
+      repo: repo.replace(/\.git$/i, ""),
+    };
+  } catch {
+    return undefined;
+  }
+}
 
 function isPositiveNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value > 0;
@@ -89,6 +118,7 @@ async function getPublicRepositoryCount(
 
 async function getContributionCount(
   username: string,
+  window: "allTime" | "year",
 ): Promise<string | undefined> {
   const token =
     process.env.GITHUB_TOKEN?.trim() || process.env.GITHUB_API?.trim();
@@ -96,6 +126,18 @@ async function getContributionCount(
   if (!token) {
     return undefined;
   }
+
+  const now = new Date();
+  const start = new Date(now);
+
+  if (window === "allTime") {
+    start.setUTCFullYear(2008, 0, 1);
+    start.setUTCHours(0, 0, 0, 0);
+  } else {
+    start.setUTCFullYear(start.getUTCFullYear() - 1);
+  }
+
+  const end = now.toISOString();
 
   const data = await safeJson<GithubContributionsResponse>(
     "https://api.github.com/graphql",
@@ -109,9 +151,9 @@ async function getContributionCount(
       },
       body: JSON.stringify({
         query: `
-          query GithubUserContributions($login: String!) {
+          query GithubUserContributions($login: String!, $from: DateTime!, $to: DateTime!) {
             user(login: $login) {
-              contributionsCollection {
+              contributionsCollection(from: $from, to: $to) {
                 contributionCalendar {
                   totalContributions
                 }
@@ -120,7 +162,9 @@ async function getContributionCount(
           }
         `,
         variables: {
+          from: start.toISOString(),
           login: username,
+          to: end,
         },
       }),
     },
@@ -155,8 +199,61 @@ async function getTrackedCodingTime(): Promise<string | undefined> {
   return undefined;
 }
 
+async function getProductionDeploymentCount(
+  repoUrl?: string,
+): Promise<string | undefined> {
+  const token =
+    process.env.GITHUB_TOKEN?.trim() || process.env.GITHUB_API?.trim();
+  const repository = parseGithubRepository(repoUrl);
+
+  if (!token || !repository) {
+    return undefined;
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${encodeURIComponent(repository.owner)}/${encodeURIComponent(repository.repo)}/deployments?environment=production&per_page=1`,
+      {
+        headers: {
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${token}`,
+          "User-Agent": "imberg-dev-site",
+        },
+        next: { revalidate: 3600 },
+      },
+    );
+
+    if (!response.ok) {
+      return undefined;
+    }
+
+    const deployments = (await response.json()) as unknown[];
+    const linkHeader = response.headers.get("link");
+
+    if (linkHeader) {
+      const lastMatch = linkHeader.match(/[?&]page=(\d+)>; rel="last"/);
+
+      if (lastMatch) {
+        const pages = Number(lastMatch[1]);
+        return Number.isFinite(pages) && pages > 0
+          ? formatCount(pages)
+          : undefined;
+      }
+    }
+
+    return deployments.length > 0 ? formatCount(deployments.length) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export function compactGithubStats(cards: GithubStatCard[]): Array<{
-  key: "publicRepos" | "contributions" | "codingTime";
+  key:
+    | "publicRepos"
+    | "contributionsYear"
+    | "contributionsAllTime"
+    | "codingTime"
+    | "productionDeployments";
   label: string;
   value: string;
 }> {
@@ -164,7 +261,12 @@ export function compactGithubStats(cards: GithubStatCard[]): Array<{
     (
       card,
     ): card is {
-      key: "publicRepos" | "contributions" | "codingTime";
+      key:
+        | "publicRepos"
+        | "contributionsYear"
+        | "contributionsAllTime"
+        | "codingTime"
+        | "productionDeployments";
       label: string;
       value: string;
     } =>
@@ -172,18 +274,30 @@ export function compactGithubStats(cards: GithubStatCard[]): Array<{
   );
 }
 
-export async function getGithubSignalCards(githubUrl?: string) {
+export async function getGithubSignalCards(
+  githubUrl?: string,
+  repoUrl?: string,
+) {
   const username = parseGithubUsername(githubUrl);
 
   if (!username) {
     return [];
   }
 
-  const [publicRepos, contributions, codingTime] = await Promise.all([
-    getPublicRepositoryCount(username),
-    getContributionCount(username),
-    getTrackedCodingTime(),
-  ]);
+  const [
+    publicRepos,
+    contributionsYear,
+    contributionsAllTime,
+    codingTime,
+    productionDeployments,
+  ] =
+    await Promise.all([
+      getPublicRepositoryCount(username),
+      getContributionCount(username, "year"),
+      getContributionCount(username, "allTime"),
+      getTrackedCodingTime(),
+      getProductionDeploymentCount(repoUrl),
+    ]);
 
   return compactGithubStats([
     {
@@ -192,14 +306,24 @@ export async function getGithubSignalCards(githubUrl?: string) {
       value: publicRepos,
     },
     {
-      key: "contributions",
-      label: "Contributions",
-      value: contributions,
+      key: "contributionsYear",
+      label: "Contributions in the last year",
+      value: contributionsYear,
+    },
+    {
+      key: "contributionsAllTime",
+      label: "All-time contributions",
+      value: contributionsAllTime,
     },
     {
       key: "codingTime",
       label: "Tracked coding time",
       value: codingTime,
+    },
+    {
+      key: "productionDeployments",
+      label: "Production deployments",
+      value: productionDeployments,
     },
   ]);
 }

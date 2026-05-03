@@ -247,6 +247,14 @@ export const GithubProfileBlock: Block = {
       required: true,
     },
     {
+      name: "statsRepoUrl",
+      type: "text",
+      admin: {
+        description:
+          "Repository URL used for deployment statistics, for example https://github.com/hansimb/pro-site-cms",
+      },
+    },
+    {
       name: "showPublicRepos",
       type: "checkbox",
       label: "Show public repositories",
@@ -259,9 +267,30 @@ export const GithubProfileBlock: Block = {
       defaultValue: true,
     },
     {
+      name: "contributionWindow",
+      type: "select",
+      defaultValue: "year",
+      options: [
+        {
+          label: "Contributions in the last year",
+          value: "year",
+        },
+        {
+          label: "All-time contributions",
+          value: "allTime",
+        },
+      ],
+    },
+    {
       name: "showCodingTime",
       type: "checkbox",
       label: "Show tracked coding time",
+      defaultValue: true,
+    },
+    {
+      name: "showProductionDeployments",
+      type: "checkbox",
+      label: "Show production deployments",
       defaultValue: true,
     },
   ],

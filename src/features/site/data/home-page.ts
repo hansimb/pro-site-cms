@@ -7,6 +7,7 @@ type RawHomeBlock = {
   attribution?: unknown;
   blockType?: unknown;
   body?: unknown;
+  contributionWindow?: unknown;
   ctaLabel?: unknown;
   ctaUrl?: unknown;
   eyebrow?: unknown;
@@ -21,7 +22,9 @@ type RawHomeBlock = {
   secondaryLink?: unknown;
   showCodingTime?: unknown;
   showContributions?: unknown;
+  showProductionDeployments?: unknown;
   showPublicRepos?: unknown;
+  statsRepoUrl?: unknown;
   summary?: unknown;
   period?: unknown;
   title?: unknown;
@@ -113,13 +116,16 @@ export type HomeFeaturedCaseStudiesBlock = {
 
 export type HomeGithubProfileBlock = {
   blockType: "githubProfile";
+  contributionWindow: "allTime" | "year";
   ctaLabel: string;
   ctaUrl: string;
   heading: string;
   intro?: string;
   showCodingTime: boolean;
   showContributions: boolean;
+  showProductionDeployments: boolean;
   showPublicRepos: boolean;
+  statsRepoUrl?: string;
 };
 
 export type HomeCalloutBlock = {
@@ -356,6 +362,8 @@ export function mapHomePageData(doc: unknown): HomePageContent {
         if (block.heading && block.ctaLabel && block.ctaUrl) {
           result.push({
             blockType: "githubProfile",
+            contributionWindow:
+              block.contributionWindow === "allTime" ? "allTime" : "year",
             ctaLabel: readString(block.ctaLabel),
             ctaUrl: readString(block.ctaUrl),
             heading: readString(block.heading),
@@ -368,10 +376,19 @@ export function mapHomePageData(doc: unknown): HomePageContent {
               typeof block.showContributions === "boolean"
                 ? block.showContributions
                 : true,
+            showProductionDeployments:
+              typeof block.showProductionDeployments === "boolean"
+                ? block.showProductionDeployments
+                : true,
             showPublicRepos:
               typeof block.showPublicRepos === "boolean"
                 ? block.showPublicRepos
                 : true,
+            statsRepoUrl:
+              typeof block.statsRepoUrl === "string" &&
+              block.statsRepoUrl.trim().length > 0
+                ? readString(block.statsRepoUrl)
+                : undefined,
           });
         }
         break;

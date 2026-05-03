@@ -44,7 +44,10 @@ export default async function HomePage() {
 
       return [
         index,
-        await getGithubSignalCards(site.settings.contact.githubUrl),
+        await getGithubSignalCards(
+          site.settings.contact.githubUrl,
+          block.statsRepoUrl,
+        ),
       ] as const;
     }),
   );
@@ -293,7 +296,7 @@ export default async function HomePage() {
                             <ContactModalTrigger
                               color="accent"
                               fontSize="sm"
-                              label={block.primaryLink?.label ?? "Contact"}
+                              label={block.buttonLabel ?? "Contact"}
                             />
                           </Stack>
                         ) : null}
@@ -334,16 +337,26 @@ export default async function HomePage() {
                             rounded="panel"
                             {...interactivePanelProps}
                           >
-                            <Stack gap={3}>
-                              <Heading as="h3" fontSize="md" letterSpacing="0">
-                                <Link asChild textDecoration="none" transition="color 160ms ease" _hover={{ color: "accent" }}>
-                                  <NextLink href={item.href}>{item.title}</NextLink>
-                                </Link>
-                              </Heading>
-                              <Text color="muted" fontSize="sm" lineHeight="1.8">
-                                {item.summary}
-                              </Text>
-                              <Link asChild color="accent" fontSize="sm" textDecoration="none" transition="color 160ms ease" _hover={{ color: "text" }}>
+                            <Stack gap={3} h="100%">
+                              <Stack gap={3}>
+                                <Heading as="h3" fontSize="md" letterSpacing="0">
+                                  <Link asChild textDecoration="none" transition="color 160ms ease" _hover={{ color: "accent" }}>
+                                    <NextLink href={item.href}>{item.title}</NextLink>
+                                  </Link>
+                                </Heading>
+                                <Text color="muted" fontSize="sm" lineHeight="1.8">
+                                  {item.summary}
+                                </Text>
+                              </Stack>
+                              <Link
+                                asChild
+                                color="accent"
+                                fontSize="sm"
+                                mt="auto"
+                                textDecoration="none"
+                                transition="color 160ms ease"
+                                _hover={{ color: "text" }}
+                              >
                                 <NextLink href={item.href}>Open case study</NextLink>
                               </Link>
                             </Stack>
@@ -359,12 +372,26 @@ export default async function HomePage() {
                       return block.showPublicRepos;
                     }
 
-                    if (stat.key === "contributions") {
-                      return block.showContributions;
+                    if (stat.key === "contributionsYear") {
+                      return (
+                        block.showContributions &&
+                        block.contributionWindow === "year"
+                      );
+                    }
+
+                    if (stat.key === "contributionsAllTime") {
+                      return (
+                        block.showContributions &&
+                        block.contributionWindow === "allTime"
+                      );
                     }
 
                     if (stat.key === "codingTime") {
                       return block.showCodingTime;
+                    }
+
+                    if (stat.key === "productionDeployments") {
+                      return block.showProductionDeployments;
                     }
 
                     return false;
@@ -385,7 +412,15 @@ export default async function HomePage() {
                       {stats.length > 0 && (
                         <Grid
                           gap={{ base: 5, md: 6 }}
-                          templateColumns={{ base: "1fr", md: "repeat(3, minmax(0, 1fr))" }}
+                          templateColumns={{
+                            base: "1fr",
+                            md: "repeat(2, minmax(0, 1fr))",
+                            lg:
+                              stats.length === 3
+                                ? "repeat(3, minmax(0, 1fr))"
+                                : "repeat(2, minmax(0, 1fr))",
+                            xl: `repeat(${Math.min(Math.max(stats.length, 1), 4)}, minmax(0, 1fr))`,
+                          }}
                         >
                           {stats.map((stat) => (
                             <Box
@@ -412,9 +447,12 @@ export default async function HomePage() {
                       <Link
                         asChild
                         color="accent"
+                        css={{ WebkitTapHighlightColor: "transparent" }}
                         fontSize="sm"
                         textDecoration="none"
                         transition="color 160ms ease"
+                        _focus={{ boxShadow: "none", outline: "none" }}
+                        _focusVisible={{ boxShadow: "none", outline: "none" }}
                         _hover={{ color: "text" }}
                       >
                         <NextLink href={block.ctaUrl} rel="noreferrer" target="_blank">
