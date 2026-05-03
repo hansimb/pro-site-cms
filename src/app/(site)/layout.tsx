@@ -14,6 +14,7 @@ import { CopyEmailButton } from "./components/copy-email-button";
 import { MobileNav } from "./components/mobile-nav";
 import { SiteNavigation } from "./components/site-navigation";
 import { SocialIconLinks } from "./components/social-icon-links";
+import { ScrollToTopFloatingButton } from "./components/scroll-to-top-floating-button";
 import "../globals.css";
 
 const sans = Manrope({
@@ -197,6 +198,7 @@ export default async function SiteLayout({
                   </Stack>
                   <Text>Payload + Neon</Text>
                 </Flex>
+                <ScrollToTopFloatingButton />
               </Container>
             </Box>
           </ContactModalProvider>
