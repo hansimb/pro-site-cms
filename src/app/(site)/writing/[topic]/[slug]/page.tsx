@@ -1,11 +1,37 @@
+import type { Metadata } from "next";
 import NextLink from "next/link";
 import { notFound } from "next/navigation";
 import { Box, Heading, Link, Stack, Text, Button } from "@chakra-ui/react";
-import { getArticleBySlug } from "@/features/site/data/payload-site";
+import { getArticleBySlug, getSiteModel } from "@/features/site/data/payload-site";
+import { buildArticleMetadata } from "@/features/site/metadata";
 import { RichTextContent } from "@/app/(site)/components/rich-text-content";
 
 interface ArticlePageProps {
   params: Promise<{ topic: string; slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ArticlePageProps): Promise<Metadata> {
+  const { topic, slug } = await params;
+  const decodedTopic = decodeURIComponent(topic);
+  const decodedSlug = decodeURIComponent(slug);
+
+  const [site, article] = await Promise.all([
+    getSiteModel(),
+    getArticleBySlug(decodedTopic, decodedSlug),
+  ]);
+
+  if (!article) {
+    return buildArticleMetadata(site, {
+      content: null,
+      excerpt: site.settings.siteDescription,
+      title: decodedSlug,
+      topic: decodedTopic,
+    });
+  }
+
+  return buildArticleMetadata(site, article);
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {

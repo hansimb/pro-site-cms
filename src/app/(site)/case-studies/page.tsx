@@ -1,6 +1,18 @@
+import type { Metadata } from "next";
 import NextLink from "next/link";
 import { Box, Heading, Link, Stack, Text } from "@chakra-ui/react";
 import { getSiteModel } from "@/features/site/data/payload-site";
+import { buildSimplePageMetadata } from "@/features/site/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSiteModel();
+
+  return buildSimplePageMetadata(
+    site,
+    "Case Studies",
+    "Selected case studies focused on practical software, systems, and delivery work.",
+  );
+}
 
 export default async function CaseStudiesPage() {
   const site = await getSiteModel();

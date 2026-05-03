@@ -4,6 +4,7 @@ import NextLink from "next/link";
 import { Manrope, Newsreader } from "next/font/google";
 import { Box, Container, Flex, Link, Text } from "@chakra-ui/react";
 import { getSiteModel } from "@/features/site/data/payload-site";
+import { buildSiteMetadata } from "@/features/site/metadata";
 import { SiteThemeProvider } from "@/features/site/theme/provider";
 import { SiteNavigation } from "./components/site-navigation";
 import "../globals.css";
@@ -19,13 +20,11 @@ const serif = Newsreader({
   style: ["normal", "italic"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Pro Site CMS",
-    template: "%s | Pro Site CMS",
-  },
-  description: "A dark, modern Payload CMS site powered by Neon Postgres.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSiteModel();
+
+  return buildSiteMetadata(site);
+}
 
 export default async function SiteLayout({
   children,

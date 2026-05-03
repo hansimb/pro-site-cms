@@ -7,11 +7,11 @@ import type { ReactNode } from "react";
 import { importMap } from "./admin/importMap.js";
 
 export const metadata: Metadata = {
-  description: "Payload CMS admin for Pro Site CMS.",
+  description: "Payload CMS admin for imberg.dev.",
   other: {
     "darkreader-lock": "true",
   },
-  title: "Payload Admin",
+  title: "Payload Admin | imberg.dev",
 };
 
 const serverFunction: ServerFunctionClient = async (args) => {

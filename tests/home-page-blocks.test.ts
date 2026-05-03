@@ -166,6 +166,7 @@ describe("home page content mapping", () => {
       "highlights",
       "timeline",
       "contactCta",
+      "featuredCaseStudies",
       "callout",
       "linkList",
     ]);

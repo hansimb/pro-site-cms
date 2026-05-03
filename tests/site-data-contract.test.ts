@@ -10,7 +10,12 @@ describe("site data contract", () => {
         { href: "/case-studies", label: "Case studies" },
       ],
       settings: {
-        siteTitle: "Pro Site CMS",
+        siteTitle: "imberg.dev",
+        seo: {
+          metaDescription:
+            "Developer portfolio focused on software, systems thinking, and business-aware technical work.",
+          metaTitle: "imberg.dev",
+        },
       },
     });
   });

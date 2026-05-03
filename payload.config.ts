@@ -4,19 +4,19 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildConfig, type PayloadEmailAdapter } from "payload";
 import sharp from "sharp";
-import { Articles } from "@/payload/collections/articles";
-import { CaseStudies } from "@/payload/collections/case-studies";
-import { Media } from "@/payload/collections/media";
-import { Users } from "@/payload/collections/users";
-import { HomePage } from "@/payload/globals/home-page";
-import { SiteSettings } from "@/payload/globals/site-settings";
-import { getPayloadEnvironment } from "@/lib/env";
+import { getPayloadEnvironment } from "./src/lib/env.ts";
+import { Articles } from "./src/payload/collections/articles.ts";
+import { CaseStudies } from "./src/payload/collections/case-studies.ts";
+import { Media } from "./src/payload/collections/media.ts";
+import { Users } from "./src/payload/collections/users.ts";
+import { HomePage } from "./src/payload/globals/home-page.ts";
+import { SiteSettings } from "./src/payload/globals/site-settings.ts";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 const payloadEnvironment = getPayloadEnvironment();
 const defaultFromAddress = process.env.PAYLOAD_FROM_ADDRESS ?? "no-reply@localhost";
-const defaultFromName = process.env.PAYLOAD_FROM_NAME ?? "Pro Site CMS";
+const defaultFromName = process.env.PAYLOAD_FROM_NAME ?? "imberg.dev";
 
 const consoleEmailAdapter: PayloadEmailAdapter = () => ({
   defaultFromAddress,

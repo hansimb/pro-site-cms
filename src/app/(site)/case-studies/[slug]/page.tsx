@@ -1,10 +1,42 @@
+import type { Metadata } from "next";
 import NextLink from "next/link";
 import { notFound } from "next/navigation";
 import { Heading, Stack, Text, Button } from "@chakra-ui/react";
-import { getCaseStudyBySlug } from "@/features/site/data/payload-site";
+import { getCaseStudyBySlug, getSiteModel } from "@/features/site/data/payload-site";
+import { buildCaseStudyMetadata } from "@/features/site/metadata";
 
 interface CaseStudyPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: CaseStudyPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
+
+  const [site, caseStudy] = await Promise.all([
+    getSiteModel(),
+    getCaseStudyBySlug(decodedSlug),
+  ]);
+
+  if (!caseStudy) {
+    return buildCaseStudyMetadata(site, {
+      background: "",
+      content: null,
+      links: [],
+      problem: "",
+      process: "",
+      results: "",
+      solution: "",
+      summary: site.settings.siteDescription,
+      tags: [],
+      title: decodedSlug,
+      whatILearned: "",
+    });
+  }
+
+  return buildCaseStudyMetadata(site, caseStudy);
 }
 
 export default async function CaseStudyPage({ params }: CaseStudyPageProps) {

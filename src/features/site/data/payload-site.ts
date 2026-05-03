@@ -13,9 +13,21 @@ type RawNavigationItem = {
 
 type RawSiteSettings = {
   navigation?: unknown;
+  seo?: unknown;
   siteDescription?: unknown;
   siteSubtitle?: unknown;
   siteTitle?: unknown;
+};
+
+type RawSiteSeo = {
+  metaDescription?: unknown;
+  metaTitle?: unknown;
+  noIndex?: unknown;
+  openGraphDescription?: unknown;
+  openGraphTitle?: unknown;
+  siteUrl?: unknown;
+  twitterDescription?: unknown;
+  twitterTitle?: unknown;
 };
 
 type RawArticleDoc = {
@@ -104,12 +116,66 @@ export type SiteModel = {
   homePage: HomePageContent;
   navigation: SiteNavigationItem[];
   settings: {
+    seo: {
+      metaDescription: string;
+      metaTitle: string;
+      noIndex: boolean;
+      openGraphDescription: string;
+      openGraphTitle: string;
+      siteUrl: string;
+      twitterDescription: string;
+      twitterTitle: string;
+    };
     siteDescription: string;
     siteSubtitle?: string;
     siteTitle: string;
   };
   topics: string[];
 };
+
+function normalizeSeoSettings(
+  siteSettings: RawSiteSettings | null | undefined,
+  siteTitle: string,
+  siteDescription: string,
+) {
+  const seo = siteSettings?.seo as RawSiteSeo | null | undefined;
+
+  return {
+    metaTitle:
+      typeof seo?.metaTitle === "string" && seo.metaTitle.trim().length > 0
+        ? seo.metaTitle
+        : siteTitle,
+    metaDescription:
+      typeof seo?.metaDescription === "string" &&
+      seo.metaDescription.trim().length > 0
+        ? seo.metaDescription
+        : siteDescription,
+    openGraphTitle:
+      typeof seo?.openGraphTitle === "string" &&
+      seo.openGraphTitle.trim().length > 0
+        ? seo.openGraphTitle
+        : siteTitle,
+    openGraphDescription:
+      typeof seo?.openGraphDescription === "string" &&
+      seo.openGraphDescription.trim().length > 0
+        ? seo.openGraphDescription
+        : siteDescription,
+    twitterTitle:
+      typeof seo?.twitterTitle === "string" && seo.twitterTitle.trim().length > 0
+        ? seo.twitterTitle
+        : siteTitle,
+    twitterDescription:
+      typeof seo?.twitterDescription === "string" &&
+      seo.twitterDescription.trim().length > 0
+        ? seo.twitterDescription
+        : siteDescription,
+    siteUrl:
+      typeof seo?.siteUrl === "string" && seo.siteUrl.trim().length > 0
+        ? seo.siteUrl
+        : "https://imberg.dev",
+    noIndex: typeof seo?.noIndex === "boolean" ? seo.noIndex : false,
+  };
+}
 
 function normalizeNavigation(items: unknown): SiteNavigationItem[] {
   if (!Array.isArray(items)) {
@@ -172,9 +238,22 @@ export function getFallbackSiteModel(): SiteModel {
       { href: "/case-studies", label: "Case studies" },
     ],
     settings: {
-      siteDescription: "A minimal dark CMS-backed site.",
+      siteDescription: "Software, systems, and business-aware development.",
+      seo: {
+        metaDescription:
+          "Developer portfolio focused on software, systems thinking, and business-aware technical work.",
+        metaTitle: "imberg.dev",
+        noIndex: false,
+        openGraphDescription:
+          "Developer portfolio focused on software, systems thinking, and business-aware technical work.",
+        openGraphTitle: "imberg.dev",
+        siteUrl: "https://imberg.dev",
+        twitterDescription:
+          "Developer portfolio focused on software, systems thinking, and business-aware technical work.",
+        twitterTitle: "imberg.dev",
+      },
       siteSubtitle: undefined,
-      siteTitle: "Pro Site CMS",
+      siteTitle: "imberg.dev",
     },
     topics: [],
   };
@@ -240,17 +319,22 @@ export async function getSiteModel() {
       ),
     ).sort();
 
+    const siteTitle = String(settingsData?.siteTitle ?? "imberg.dev");
+    const siteDescription = String(
+      settingsData?.siteDescription ??
+        "Software, systems, and business-aware development.",
+    );
+
     return {
       settings: {
-        siteTitle: String(settingsData?.siteTitle ?? "Pro Site CMS"),
+        siteTitle,
         siteSubtitle:
           typeof settingsData?.siteSubtitle === "string" &&
           settingsData.siteSubtitle.trim().length > 0
             ? settingsData.siteSubtitle
             : undefined,
-        siteDescription: String(
-          settingsData?.siteDescription ?? "A minimal dark CMS-backed site.",
-        ),
+        siteDescription,
+        seo: normalizeSeoSettings(settingsData, siteTitle, siteDescription),
       },
       homePage: mapHomePageData(homePage),
       navigation: normalizeNavigation(settingsData?.navigation),

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import NextLink from "next/link";
 import {
   Box,
@@ -9,6 +10,17 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { getSiteModel } from "@/features/site/data/payload-site";
+import { buildSimplePageMetadata } from "@/features/site/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSiteModel();
+
+  return buildSimplePageMetadata(
+    site,
+    "Writing",
+    "Articles, notes, and technical thinking around software, systems, and practical learning.",
+  );
+}
 
 export default async function WritingPage() {
   const site = await getSiteModel();

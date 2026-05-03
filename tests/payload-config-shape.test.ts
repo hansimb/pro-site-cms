@@ -40,4 +40,13 @@ describe("payload config shape", () => {
       ]),
     );
   });
+
+  it("exposes SEO controls in site settings", async () => {
+    const config = await configPromise;
+    const siteSettings = config.globals?.find((global) => global.slug === "site-settings");
+
+    expect(siteSettings?.fields.map((field) => ("name" in field ? field.name : undefined))).toEqual(
+      expect.arrayContaining(["siteTitle", "siteDescription", "seo"]),
+    );
+  });
 });

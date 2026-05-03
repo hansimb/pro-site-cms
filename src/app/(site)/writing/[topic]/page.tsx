@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import NextLink from "next/link";
 import { notFound } from "next/navigation";
 import { Box, Heading, Link, Stack, Text, Button } from "@chakra-ui/react";
@@ -5,9 +6,24 @@ import {
   getArticlesByTopic,
   getSiteModel,
 } from "@/features/site/data/payload-site";
+import { buildSimplePageMetadata } from "@/features/site/metadata";
 
 interface TopicPageProps {
   params: Promise<{ topic: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: TopicPageProps): Promise<Metadata> {
+  const { topic } = await params;
+  const decodedTopic = decodeURIComponent(topic);
+  const site = await getSiteModel();
+
+  return buildSimplePageMetadata(
+    site,
+    decodedTopic,
+    `Articles and notes in the ${decodedTopic} topic.`,
+  );
 }
 
 export default async function TopicPage({ params }: TopicPageProps) {
