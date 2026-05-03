@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Portal,
-  Stack,
-  Text,
-  Tooltip,
-} from "@chakra-ui/react";
+import { Box, Popover, Portal, Stack, Text } from "@chakra-ui/react";
 
 function InfoGlyph() {
   return (
@@ -51,13 +45,8 @@ export function StatDetailsTooltip({
   }
 
   return (
-    <Tooltip.Root
-      closeDelay={80}
-      lazyMount
-      openDelay={120}
-      positioning={{ placement: "top-start" }}
-    >
-      <Tooltip.Trigger asChild>
+    <Popover.Root lazyMount positioning={{ placement: "top-start" }}>
+      <Popover.Trigger asChild>
         <Box
           aria-label={`${label}. Included repositories: ${details.join(", ")}`}
           as="button"
@@ -83,27 +72,30 @@ export function StatDetailsTooltip({
         >
           <InfoGlyph />
         </Box>
-      </Tooltip.Trigger>
+      </Popover.Trigger>
       <Portal>
-        <Tooltip.Positioner>
-          <Tooltip.Content
+        <Popover.Positioner>
+          <Popover.Content
             bg="rgba(12, 12, 12, 0.98)"
             borderColor="rgba(255, 255, 255, 0.12)"
             borderRadius="16px"
             borderWidth="1px"
             boxShadow="0 18px 50px rgba(0, 0, 0, 0.45)"
             color="fg.default"
-            maxW="280px"
+            maxW="320px"
             px={3.5}
-            py={3}
+            py={3.5}
           >
-            <Tooltip.Arrow>
-              <Tooltip.ArrowTip />
-            </Tooltip.Arrow>
-            <Stack gap={2}>
-              <Text as="div" color="fg.default" fontSize="xs" fontWeight="700">
-                Included repositories
-              </Text>
+            <Popover.Body p={0}>
+              <Stack gap={2}>
+              <Box
+                color="fg.default"
+                fontSize="xs"
+                fontWeight="700"
+                lineHeight="1.5"
+              >
+                Included personal projects deployed to production:
+              </Box>
               <Stack gap={1}>
                 {details.map((detail) => (
                   <Text
@@ -118,10 +110,11 @@ export function StatDetailsTooltip({
                   </Text>
                 ))}
               </Stack>
-            </Stack>
-          </Tooltip.Content>
-        </Tooltip.Positioner>
+              </Stack>
+            </Popover.Body>
+          </Popover.Content>
+        </Popover.Positioner>
       </Portal>
-    </Tooltip.Root>
+    </Popover.Root>
   );
 }
