@@ -5,6 +5,7 @@ export type GithubStatCard = {
     | "contributionsAllTime"
     | "codingTime"
     | "productionDeployments";
+  details?: string[];
   label: string;
   value?: string;
 };
@@ -12,6 +13,13 @@ export type GithubStatCard = {
 type GithubUserResponse = {
   public_repos?: unknown;
 };
+
+type GithubRepositoryResponse = Array<{
+  name?: unknown;
+  owner?: {
+    login?: unknown;
+  };
+}>;
 
 type GithubContributionsResponse = {
   data?: {
@@ -54,6 +62,10 @@ function parseGithubRepository(repoUrl?: string):
   } catch {
     return undefined;
   }
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 function isPositiveNumber(value: unknown): value is number {
@@ -199,17 +211,59 @@ async function getTrackedCodingTime(): Promise<string | undefined> {
   return undefined;
 }
 
-async function getProductionDeploymentCount(
-  repoUrl?: string,
-): Promise<string | undefined> {
-  const token =
-    process.env.GITHUB_TOKEN?.trim() || process.env.GITHUB_API?.trim();
-  const repository = parseGithubRepository(repoUrl);
+async function getOwnedRepositories(
+  token: string,
+): Promise<Array<{ owner: string; repo: string }>> {
+  const repositories: Array<{ owner: string; repo: string }> = [];
 
-  if (!token || !repository) {
-    return undefined;
+  for (let page = 1; page <= 10; page += 1) {
+    const data = await safeJson<GithubRepositoryResponse>(
+      `https://api.github.com/user/repos?affiliation=owner&per_page=100&page=${page}`,
+      {
+        headers: {
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${token}`,
+          "User-Agent": "imberg-dev-site",
+        },
+      },
+    );
+
+    if (!data || data.length === 0) {
+      break;
+    }
+
+    repositories.push(
+      ...data
+        .map((repository) => {
+          const owner = repository?.owner?.login;
+          const repo = repository?.name;
+
+          if (!isNonEmptyString(owner) || !isNonEmptyString(repo)) {
+            return undefined;
+          }
+
+          return {
+            owner: owner.trim(),
+            repo: repo.trim(),
+          };
+        })
+        .filter((value): value is { owner: string; repo: string } =>
+          Boolean(value),
+        ),
+    );
+
+    if (data.length < 100) {
+      break;
+    }
   }
 
+  return repositories;
+}
+
+async function hasProductionDeployment(
+  token: string,
+  repository: { owner: string; repo: string },
+): Promise<boolean> {
   try {
     const response = await fetch(
       `https://api.github.com/repos/${encodeURIComponent(repository.owner)}/${encodeURIComponent(repository.repo)}/deployments?environment=production&per_page=1`,
@@ -224,27 +278,75 @@ async function getProductionDeploymentCount(
     );
 
     if (!response.ok) {
-      return undefined;
+      return false;
     }
 
     const deployments = (await response.json()) as unknown[];
-    const linkHeader = response.headers.get("link");
+    return Array.isArray(deployments) && deployments.length > 0;
+  } catch {
+    return false;
+  }
+}
 
-    if (linkHeader) {
-      const lastMatch = linkHeader.match(/[?&]page=(\d+)>; rel="last"/);
+async function getProductionDeploymentCount(
+  githubUrl?: string,
+  repoUrl?: string,
+): Promise<{ repositories: string[]; value?: string }> {
+  const token =
+    process.env.GITHUB_TOKEN?.trim() || process.env.GITHUB_API?.trim();
 
-      if (lastMatch) {
-        const pages = Number(lastMatch[1]);
-        return Number.isFinite(pages) && pages > 0
-          ? formatCount(pages)
-          : undefined;
-      }
+  if (!token) {
+    return { repositories: [] };
+  }
+
+  const preferredOwner = parseGithubUsername(githubUrl);
+  const fallbackRepository = parseGithubRepository(repoUrl);
+  const repositories = await getOwnedRepositories(token);
+  const uniqueRepositories = new Map<string, { owner: string; repo: string }>();
+
+  for (const repository of repositories) {
+    if (
+      preferredOwner &&
+      repository.owner.toLowerCase() !== preferredOwner.toLowerCase()
+    ) {
+      continue;
     }
 
-    return deployments.length > 0 ? formatCount(deployments.length) : undefined;
-  } catch {
-    return undefined;
+    uniqueRepositories.set(
+      `${repository.owner.toLowerCase()}/${repository.repo.toLowerCase()}`,
+      repository,
+    );
   }
+
+  if (uniqueRepositories.size === 0 && fallbackRepository) {
+    uniqueRepositories.set(
+      `${fallbackRepository.owner.toLowerCase()}/${fallbackRepository.repo.toLowerCase()}`,
+      fallbackRepository,
+    );
+  }
+
+  if (uniqueRepositories.size === 0) {
+    return { repositories: [] };
+  }
+
+  const productionRepositories = await Promise.all(
+    Array.from(uniqueRepositories.values()).map(async (repository) =>
+      (await hasProductionDeployment(token, repository)) ? repository : undefined,
+    ),
+  );
+
+  const repositoriesWithProduction = productionRepositories
+    .filter((value): value is { owner: string; repo: string } => Boolean(value))
+    .map((repository) => `${repository.owner}/${repository.repo}`)
+    .sort((left, right) => left.localeCompare(right));
+
+  return {
+    repositories: repositoriesWithProduction,
+    value:
+      repositoriesWithProduction.length > 0
+        ? formatCount(repositoriesWithProduction.length)
+        : undefined,
+  };
 }
 
 export function compactGithubStats(cards: GithubStatCard[]): Array<{
@@ -254,6 +356,7 @@ export function compactGithubStats(cards: GithubStatCard[]): Array<{
     | "contributionsAllTime"
     | "codingTime"
     | "productionDeployments";
+  details?: string[];
   label: string;
   value: string;
 }> {
@@ -267,6 +370,7 @@ export function compactGithubStats(cards: GithubStatCard[]): Array<{
         | "contributionsAllTime"
         | "codingTime"
         | "productionDeployments";
+      details?: string[];
       label: string;
       value: string;
     } =>
@@ -289,14 +393,14 @@ export async function getGithubSignalCards(
     contributionsYear,
     contributionsAllTime,
     codingTime,
-    productionDeployments,
+    productionDeploymentStats,
   ] =
     await Promise.all([
       getPublicRepositoryCount(username),
       getContributionCount(username, "year"),
       getContributionCount(username, "allTime"),
       getTrackedCodingTime(),
-      getProductionDeploymentCount(repoUrl),
+      getProductionDeploymentCount(githubUrl, repoUrl),
     ]);
 
   return compactGithubStats([
@@ -322,8 +426,9 @@ export async function getGithubSignalCards(
     },
     {
       key: "productionDeployments",
-      label: "Production deployments",
-      value: productionDeployments,
+      details: productionDeploymentStats.repositories,
+      label: "Repositories deployed to production",
+      value: productionDeploymentStats.value,
     },
   ]);
 }

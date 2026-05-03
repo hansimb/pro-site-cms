@@ -438,6 +438,29 @@ export default async function HomePage() {
                                 </Text>
                                 <Text color="muted" fontSize="sm">
                                   {stat.label}
+                                  {stat.details && stat.details.length > 0 ? (
+                                    <Box
+                                      as="span"
+                                      aria-label={`Included repositories: ${stat.details.join(", ")}`}
+                                      borderColor="rgba(255, 255, 255, 0.18)"
+                                      borderRadius="999px"
+                                      borderWidth="1px"
+                                      color="text"
+                                      cursor="help"
+                                      display="inline-flex"
+                                      fontSize="10px"
+                                      fontWeight="700"
+                                      h="18px"
+                                      justifyContent="center"
+                                      lineHeight="1"
+                                      ml={2}
+                                      title={stat.details.join("\n")}
+                                      verticalAlign="middle"
+                                      w="18px"
+                                    >
+                                      i
+                                    </Box>
+                                  ) : null}
                                 </Text>
                               </Stack>
                             </Box>

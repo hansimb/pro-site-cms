@@ -290,7 +290,7 @@ export const GithubProfileBlock: Block = {
     {
       name: "showProductionDeployments",
       type: "checkbox",
-      label: "Show production deployments",
+      label: "Show repositories deployed to production",
       defaultValue: true,
     },
   ],
