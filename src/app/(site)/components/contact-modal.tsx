@@ -2,10 +2,12 @@
 
 import NextLink from "next/link";
 import {
+  Box,
   Button,
   Dialog,
   Link,
   Portal,
+  Separator,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -56,30 +58,58 @@ export function ContactModal({
             <Dialog.Body pb={6}>
               <Stack gap={5}>
                 {email && (
-                  <Stack gap={3}>
-                    <Text color="text" fontSize="md">
-                      {email}
-                    </Text>
-                    <Stack direction={{ base: "column", sm: "row" }} gap={3}>
-                      <CopyEmailButton email={email} />
-                      <Button asChild size="sm" variant="subtle">
-                        <NextLink href={`mailto:${email}`}>Open email app</NextLink>
-                      </Button>
-                    </Stack>
-                  </Stack>
-                )}
-                {linkedinUrl && (
-                  <Link
-                    asChild
-                    color="accent"
-                    fontSize="sm"
-                    textDecoration="none"
-                    _hover={{ color: "text" }}
+                  <Box
+                    bg="surface"
+                    borderColor="edge"
+                    borderWidth="1px"
+                    p={4}
+                    rounded="panel"
                   >
-                    <NextLink href={linkedinUrl} rel="noreferrer" target="_blank">
-                      Open LinkedIn
-                    </NextLink>
-                  </Link>
+                    <Stack gap={3}>
+                      <Text color="accent" fontSize="xs" fontWeight="700" textTransform="uppercase">
+                        Send email
+                      </Text>
+                      <Text color="text" fontSize="md">
+                        {email}
+                      </Text>
+                      <Stack direction={{ base: "column", sm: "row" }} gap={3}>
+                        <CopyEmailButton email={email} />
+                        <Button asChild size="sm" variant="subtle">
+                          <NextLink href={`mailto:${email}`}>Open email app</NextLink>
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </Box>
+                )}
+                {email && linkedinUrl && <Separator borderColor="edge" />}
+                {linkedinUrl && (
+                  <Box
+                    bg="surface"
+                    borderColor="edge"
+                    borderWidth="1px"
+                    p={4}
+                    rounded="panel"
+                  >
+                    <Stack gap={3}>
+                      <Text color="accent" fontSize="xs" fontWeight="700" textTransform="uppercase">
+                        Contact on LinkedIn
+                      </Text>
+                      <Text color="muted" fontSize="sm" lineHeight="1.7">
+                        If LinkedIn is the better context, you can also reach out there directly.
+                      </Text>
+                      <Link
+                        asChild
+                        color="accent"
+                        fontSize="sm"
+                        textDecoration="none"
+                        _hover={{ color: "text" }}
+                      >
+                        <NextLink href={linkedinUrl} rel="noreferrer" target="_blank">
+                          Open LinkedIn
+                        </NextLink>
+                      </Link>
+                    </Stack>
+                  </Box>
                 )}
               </Stack>
             </Dialog.Body>

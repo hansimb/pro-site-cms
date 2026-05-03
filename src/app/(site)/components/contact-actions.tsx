@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { Link } from "@chakra-ui/react";
 import { ContactModal } from "./contact-modal";
 
@@ -10,7 +16,9 @@ type ContactModalContextValue = {
   openModal: () => void;
 };
 
-const ContactModalContext = createContext<ContactModalContextValue | null>(null);
+const ContactModalContext = createContext<ContactModalContextValue | null>(
+  null,
+);
 
 type ContactModalProviderProps = {
   children: ReactNode;

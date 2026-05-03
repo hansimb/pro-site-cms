@@ -162,28 +162,14 @@ export const ContactCtaBlock: Block = {
     {
       name: "primaryLink",
       type: "group",
+      admin: {
+        description: "Single CTA button label. Opens the contact modal.",
+      },
       fields: [
         {
           name: "label",
           type: "text",
-        },
-        {
-          name: "href",
-          type: "text",
-        },
-      ],
-    },
-    {
-      name: "secondaryLink",
-      type: "group",
-      fields: [
-        {
-          name: "label",
-          type: "text",
-        },
-        {
-          name: "href",
-          type: "text",
+          label: "Button label",
         },
       ],
     },
@@ -259,6 +245,24 @@ export const GithubProfileBlock: Block = {
       name: "ctaUrl",
       type: "text",
       required: true,
+    },
+    {
+      name: "showPublicRepos",
+      type: "checkbox",
+      label: "Show public repositories",
+      defaultValue: true,
+    },
+    {
+      name: "showContributions",
+      type: "checkbox",
+      label: "Show contributions",
+      defaultValue: true,
+    },
+    {
+      name: "showCodingTime",
+      type: "checkbox",
+      label: "Show tracked coding time",
+      defaultValue: true,
     },
   ],
 };

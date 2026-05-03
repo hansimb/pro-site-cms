@@ -288,26 +288,15 @@ export default async function HomePage() {
                             {block.body}
                           </Text>
                         </Stack>
-                        <Stack direction={{ base: "column", md: "row" }} gap={3}>
-                          {site.settings.contact.email && (
+                        {site.settings.contact.email || site.settings.contact.linkedinUrl ? (
+                          <Stack direction={{ base: "column", md: "row" }} gap={3}>
                             <ContactModalTrigger
                               color="accent"
                               fontSize="sm"
-                              label={block.primaryLink?.label ?? "Email"}
+                              label={block.primaryLink?.label ?? "Contact"}
                             />
-                          )}
-                          {site.settings.contact.linkedinUrl && (
-                            <Link asChild color="muted" fontSize="sm" textDecoration="none" {...linkHoverProps}>
-                              <NextLink
-                                href={site.settings.contact.linkedinUrl}
-                                rel="noreferrer"
-                                target="_blank"
-                              >
-                                {block.secondaryLink?.label ?? "LinkedIn"}
-                              </NextLink>
-                            </Link>
-                          )}
-                        </Stack>
+                          </Stack>
+                        ) : null}
                       </Stack>
                     </Box>
                   );
@@ -365,7 +354,21 @@ export default async function HomePage() {
                   );
 
                 case "githubProfile": {
-                  const stats = githubSignalByIndex.get(index) ?? [];
+                  const stats = (githubSignalByIndex.get(index) ?? []).filter((stat) => {
+                    if (stat.key === "publicRepos") {
+                      return block.showPublicRepos;
+                    }
+
+                    if (stat.key === "contributions") {
+                      return block.showContributions;
+                    }
+
+                    if (stat.key === "codingTime") {
+                      return block.showCodingTime;
+                    }
+
+                    return false;
+                  });
 
                   return (
                     <Stack gap={6} key={`${block.blockType}-${index}`}>
@@ -406,7 +409,14 @@ export default async function HomePage() {
                           ))}
                         </Grid>
                       )}
-                      <Link asChild color="accent" fontSize="sm" textDecoration="none" {...linkHoverProps}>
+                      <Link
+                        asChild
+                        color="accent"
+                        fontSize="sm"
+                        textDecoration="none"
+                        transition="color 160ms ease"
+                        _hover={{ color: "text" }}
+                      >
                         <NextLink href={block.ctaUrl} rel="noreferrer" target="_blank">
                           {block.ctaLabel}
                         </NextLink>

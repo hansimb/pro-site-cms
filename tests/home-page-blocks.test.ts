@@ -73,8 +73,7 @@ describe("home page content mapping", () => {
           heading: "Let us build",
           body: "Open to interesting projects.",
           primaryLink: {
-            href: "mailto:test@example.com",
-            label: "Email me",
+            label: "Contact",
           },
         },
         {
@@ -83,6 +82,9 @@ describe("home page content mapping", () => {
           intro: "Selected public work and coding signal.",
           ctaLabel: "Open profile",
           ctaUrl: "https://github.com/example",
+          showPublicRepos: true,
+          showContributions: false,
+          showCodingTime: true,
         },
         {
           blockType: "linkList",
@@ -146,11 +148,8 @@ describe("home page content mapping", () => {
       {
         blockType: "contactCta",
         body: "Open to interesting projects.",
+        buttonLabel: "Contact",
         heading: "Let us build",
-        primaryLink: {
-          href: "mailto:test@example.com",
-          label: "Email me",
-        },
       },
       {
         blockType: "githubProfile",
@@ -158,6 +157,9 @@ describe("home page content mapping", () => {
         ctaUrl: "https://github.com/example",
         heading: "GitHub",
         intro: "Selected public work and coding signal.",
+        showCodingTime: true,
+        showContributions: false,
+        showPublicRepos: true,
       },
       {
         blockType: "linkList",

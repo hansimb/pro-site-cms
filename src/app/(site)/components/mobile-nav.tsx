@@ -16,12 +16,25 @@ import { ContactModalTrigger } from "./contact-actions";
 
 function MenuIcon() {
   return (
-    <svg aria-hidden="true" fill="none" height="16" viewBox="0 0 24 24" width="16">
+    <svg aria-hidden="true" fill="none" height="20" viewBox="0 0 24 24" width="20">
       <path
         d="M4 7h16M4 12h16M4 17h16"
         stroke="currentColor"
         strokeLinecap="round"
-        strokeWidth="1.8"
+        strokeWidth="2.1"
+      />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" height="18" viewBox="0 0 24 24" width="18">
+      <path
+        d="M6 6l12 12M18 6 6 18"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="2"
       />
     </svg>
   );
@@ -43,7 +56,13 @@ export function MobileNav({ navigation }: MobileNavProps) {
       placement="end"
     >
       <Drawer.Trigger asChild>
-        <IconButton aria-label="Open menu" color="muted" display={{ base: "inline-flex", md: "none" }} size="sm" variant="ghost">
+        <IconButton
+          aria-label="Open menu"
+          color="white"
+          display={{ base: "inline-flex", md: "none" }}
+          size="md"
+          variant="ghost"
+        >
           <MenuIcon />
         </IconButton>
       </Drawer.Trigger>
@@ -56,8 +75,13 @@ export function MobileNav({ navigation }: MobileNavProps) {
             borderLeftWidth="1px"
             maxW="xs"
           >
-            <Drawer.Header>
+            <Drawer.Header alignItems="center" display="flex" justifyContent="space-between">
               <Drawer.Title>Menu</Drawer.Title>
+              <Drawer.CloseTrigger asChild>
+                <IconButton aria-label="Close menu" color="white" size="sm" variant="ghost">
+                  <CloseIcon />
+                </IconButton>
+              </Drawer.CloseTrigger>
             </Drawer.Header>
             <Drawer.Body>
               <Stack gap={5}>
@@ -87,7 +111,6 @@ export function MobileNav({ navigation }: MobileNavProps) {
                 </Flex>
               </Stack>
             </Drawer.Body>
-            <Drawer.CloseTrigger />
           </Drawer.Content>
         </Drawer.Positioner>
       </Portal>

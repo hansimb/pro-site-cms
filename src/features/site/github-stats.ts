@@ -1,4 +1,5 @@
 export type GithubStatCard = {
+  key: "publicRepos" | "contributions" | "codingTime";
   label: string;
   value?: string;
 };
@@ -155,11 +156,18 @@ async function getTrackedCodingTime(): Promise<string | undefined> {
 }
 
 export function compactGithubStats(cards: GithubStatCard[]): Array<{
+  key: "publicRepos" | "contributions" | "codingTime";
   label: string;
   value: string;
 }> {
   return cards.filter(
-    (card): card is { label: string; value: string } =>
+    (
+      card,
+    ): card is {
+      key: "publicRepos" | "contributions" | "codingTime";
+      label: string;
+      value: string;
+    } =>
       typeof card.value === "string" && card.value.trim().length > 0,
   );
 }
@@ -179,14 +187,17 @@ export async function getGithubSignalCards(githubUrl?: string) {
 
   return compactGithubStats([
     {
+      key: "publicRepos",
       label: "Public repositories",
       value: publicRepos,
     },
     {
+      key: "contributions",
       label: "Contributions",
       value: contributions,
     },
     {
+      key: "codingTime",
       label: "Tracked coding time",
       value: codingTime,
     },

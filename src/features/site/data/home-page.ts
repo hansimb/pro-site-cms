@@ -19,6 +19,9 @@ type RawHomeBlock = {
   quote?: unknown;
   role?: unknown;
   secondaryLink?: unknown;
+  showCodingTime?: unknown;
+  showContributions?: unknown;
+  showPublicRepos?: unknown;
   summary?: unknown;
   period?: unknown;
   title?: unknown;
@@ -93,9 +96,8 @@ export type HomeTimelineBlock = {
 export type HomeContactCtaBlock = {
   blockType: "contactCta";
   body: string;
+  buttonLabel?: string;
   heading: string;
-  primaryLink?: HomeLink;
-  secondaryLink?: HomeLink;
 };
 
 export type HomeFeaturedCaseStudiesBlock = {
@@ -115,6 +117,9 @@ export type HomeGithubProfileBlock = {
   ctaUrl: string;
   heading: string;
   intro?: string;
+  showCodingTime: boolean;
+  showContributions: boolean;
+  showPublicRepos: boolean;
 };
 
 export type HomeCalloutBlock = {
@@ -159,6 +164,16 @@ function normalizeLink(value: unknown): HomeLink | undefined {
     href: String(link.href),
     label: String(link.label),
   };
+}
+
+function normalizeLinkLabel(value: unknown): string | undefined {
+  const link = value as RawLink | null | undefined;
+
+  if (!link?.label) {
+    return undefined;
+  }
+
+  return readString(link.label);
 }
 
 function normalizeHighlightItem(value: unknown) {
@@ -314,9 +329,8 @@ export function mapHomePageData(doc: unknown): HomePageContent {
           result.push({
             blockType: "contactCta",
             body: readString(block.body),
+            buttonLabel: normalizeLinkLabel(block.primaryLink),
             heading: readString(block.heading),
-            primaryLink: normalizeLink(block.primaryLink),
-            secondaryLink: normalizeLink(block.secondaryLink),
           });
         }
         break;
@@ -346,6 +360,18 @@ export function mapHomePageData(doc: unknown): HomePageContent {
             ctaUrl: readString(block.ctaUrl),
             heading: readString(block.heading),
             intro: block.intro ? readString(block.intro) : undefined,
+            showCodingTime:
+              typeof block.showCodingTime === "boolean"
+                ? block.showCodingTime
+                : true,
+            showContributions:
+              typeof block.showContributions === "boolean"
+                ? block.showContributions
+                : true,
+            showPublicRepos:
+              typeof block.showPublicRepos === "boolean"
+                ? block.showPublicRepos
+                : true,
           });
         }
         break;

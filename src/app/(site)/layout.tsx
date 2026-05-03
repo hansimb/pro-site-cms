@@ -106,15 +106,23 @@ export default async function SiteLayout({
                   <Link
                     asChild
                     color="text"
+                    css={{ WebkitTapHighlightColor: "transparent" }}
                     fontSize="sm"
                     fontWeight="700"
                     letterSpacing="0"
                     textDecoration="none"
                     flex="1 1 auto"
                     minW={0}
+                    _focus={{ boxShadow: "none", outline: "none" }}
+                    _focusVisible={{ boxShadow: "none", outline: "none" }}
                   >
                     <NextLink href="/">
-                      <Box as="span" display="inline-block" lineHeight="1.15" maxW="100%">
+                      <Box
+                        as="span"
+                        display="inline-block"
+                        lineHeight="1.15"
+                        maxW="100%"
+                      >
                         <Box as="span" display="block">
                           {site.settings.siteTitle}
                         </Box>
@@ -134,7 +142,11 @@ export default async function SiteLayout({
                       </Box>
                     </NextLink>
                   </Link>
-                  <Flex align="center" display={{ base: "none", md: "flex" }} gap={4}>
+                  <Flex
+                    align="center"
+                    display={{ base: "none", md: "flex" }}
+                    gap={4}
+                  >
                     <SiteNavigation navigation={site.navigation} />
                     <ContactModalTrigger />
                     <SocialIconLinks
@@ -142,7 +154,11 @@ export default async function SiteLayout({
                       linkedinUrl={site.settings.contact.linkedinUrl}
                     />
                   </Flex>
-                  <Flex align="center" display={{ base: "flex", md: "none" }} gap={1}>
+                  <Flex
+                    align="center"
+                    display={{ base: "flex", md: "none" }}
+                    gap={1}
+                  >
                     <SocialIconLinks
                       githubUrl={site.settings.contact.githubUrl}
                       linkedinUrl={site.settings.contact.linkedinUrl}
@@ -172,7 +188,10 @@ export default async function SiteLayout({
                     {site.settings.contact.email && (
                       <Flex align="center" gap={2}>
                         <Text color="text">{site.settings.contact.email}</Text>
-                        <CopyEmailButton email={site.settings.contact.email} iconOnly />
+                        <CopyEmailButton
+                          email={site.settings.contact.email}
+                          iconOnly
+                        />
                       </Flex>
                     )}
                   </Stack>
