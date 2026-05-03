@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Dialog,
+  IconButton,
   Link,
   Portal,
   Separator,
@@ -12,6 +13,19 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { CopyEmailButton } from "./copy-email-button";
+
+function CloseIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" height="18" viewBox="0 0 24 24" width="18">
+      <path
+        d="M6 6l12 12M18 6 6 18"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+}
 
 export type ContactModalProps = {
   email?: string;
@@ -47,13 +61,29 @@ export function ContactModal({
             maxW="md"
             rounded="panel"
           >
-            <Dialog.Header>
+            <Dialog.Header
+              alignItems="flex-start"
+              display="flex"
+              justifyContent="space-between"
+              gap={4}
+            >
               <Stack gap={1}>
                 <Dialog.Title>Contact</Dialog.Title>
                 <Text color="muted" fontSize="sm">
                   Reach out directly or copy the address for later.
                 </Text>
               </Stack>
+              <Dialog.CloseTrigger asChild>
+                <IconButton
+                  aria-label="Close contact modal"
+                  color="white"
+                  flexShrink={0}
+                  size="sm"
+                  variant="ghost"
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Dialog.CloseTrigger>
             </Dialog.Header>
             <Dialog.Body pb={6}>
               <Stack gap={5}>
@@ -113,7 +143,6 @@ export function ContactModal({
                 )}
               </Stack>
             </Dialog.Body>
-            <Dialog.CloseTrigger />
           </Dialog.Content>
         </Dialog.Positioner>
       </Portal>
