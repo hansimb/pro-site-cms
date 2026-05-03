@@ -46,7 +46,7 @@ describe("payload config shape", () => {
     const siteSettings = config.globals?.find((global) => global.slug === "site-settings");
 
     expect(siteSettings?.fields.map((field) => ("name" in field ? field.name : undefined))).toEqual(
-      expect.arrayContaining(["siteTitle", "siteDescription", "seo"]),
+      expect.arrayContaining(["siteTitle", "siteDescription", "contact", "seo"]),
     );
   });
 });

@@ -5,6 +5,10 @@ import {
   mapHomePageData,
   type HomePageContent,
 } from "./home-page";
+import {
+  normalizeContactSettings,
+  type SiteContactSettings,
+} from "../contact";
 
 type RawNavigationItem = {
   href?: unknown;
@@ -12,6 +16,7 @@ type RawNavigationItem = {
 };
 
 type RawSiteSettings = {
+  contact?: unknown;
   navigation?: unknown;
   seo?: unknown;
   siteDescription?: unknown;
@@ -116,6 +121,7 @@ export type SiteModel = {
   homePage: HomePageContent;
   navigation: SiteNavigationItem[];
   settings: {
+    contact: SiteContactSettings;
     seo: {
       metaDescription: string;
       metaTitle: string;
@@ -238,6 +244,11 @@ export function getFallbackSiteModel(): SiteModel {
       { href: "/case-studies", label: "Case studies" },
     ],
     settings: {
+      contact: {
+        email: undefined,
+        githubUrl: undefined,
+        linkedinUrl: undefined,
+      },
       siteDescription: "Software, systems, and business-aware development.",
       seo: {
         metaDescription:
@@ -327,6 +338,10 @@ export async function getSiteModel() {
 
     return {
       settings: {
+        contact: normalizeContactSettings(
+          (settingsData?.contact as Record<string, unknown> | null | undefined) ??
+            {},
+        ),
         siteTitle,
         siteSubtitle:
           typeof settingsData?.siteSubtitle === "string" &&

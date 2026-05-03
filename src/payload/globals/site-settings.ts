@@ -42,6 +42,24 @@ export const SiteSettings: GlobalConfig = {
       ],
     },
     {
+      name: "contact",
+      type: "group",
+      fields: [
+        {
+          name: "email",
+          type: "text",
+        },
+        {
+          name: "linkedinUrl",
+          type: "text",
+        },
+        {
+          name: "githubUrl",
+          type: "text",
+        },
+      ],
+    },
+    {
       name: "seo",
       type: "group",
       fields: [

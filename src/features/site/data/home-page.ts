@@ -7,6 +7,8 @@ type RawHomeBlock = {
   attribution?: unknown;
   blockType?: unknown;
   body?: unknown;
+  ctaLabel?: unknown;
+  ctaUrl?: unknown;
   eyebrow?: unknown;
   featured?: unknown;
   heading?: unknown;
@@ -107,6 +109,14 @@ export type HomeFeaturedCaseStudiesBlock = {
   }>;
 };
 
+export type HomeGithubProfileBlock = {
+  blockType: "githubProfile";
+  ctaLabel: string;
+  ctaUrl: string;
+  heading: string;
+  intro?: string;
+};
+
 export type HomeCalloutBlock = {
   blockType: "callout";
   body: string;
@@ -127,6 +137,7 @@ export type HomePageContent = {
     | HomeTimelineBlock
     | HomeContactCtaBlock
     | HomeFeaturedCaseStudiesBlock
+    | HomeGithubProfileBlock
     | HomeCalloutBlock
     | HomeLinkListBlock
   >;
@@ -323,6 +334,18 @@ export function mapHomePageData(doc: unknown): HomePageContent {
                     Boolean(value),
                   )
               : [],
+          });
+        }
+        break;
+
+      case "githubProfile":
+        if (block.heading && block.ctaLabel && block.ctaUrl) {
+          result.push({
+            blockType: "githubProfile",
+            ctaLabel: readString(block.ctaLabel),
+            ctaUrl: readString(block.ctaUrl),
+            heading: readString(block.heading),
+            intro: block.intro ? readString(block.intro) : undefined,
           });
         }
         break;

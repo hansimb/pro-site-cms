@@ -19,4 +19,14 @@ describe("site data contract", () => {
       },
     });
   });
+
+  it("provides empty optional contact and social settings in the fallback model", () => {
+    expect(getFallbackSiteModel().settings).toMatchObject({
+      contact: {
+        email: undefined,
+        githubUrl: undefined,
+        linkedinUrl: undefined,
+      },
+    });
+  });
 });

@@ -238,6 +238,31 @@ export const CalloutBlock: Block = {
   ],
 };
 
+export const GithubProfileBlock: Block = {
+  slug: "githubProfile",
+  fields: [
+    {
+      name: "heading",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "intro",
+      type: "textarea",
+    },
+    {
+      name: "ctaLabel",
+      type: "text",
+      required: true,
+    },
+    {
+      name: "ctaUrl",
+      type: "text",
+      required: true,
+    },
+  ],
+};
+
 export const LinkListBlock: Block = {
   slug: "linkList",
   fields: [
@@ -273,6 +298,7 @@ export const HomeBlocks = [
   TimelineBlock,
   ContactCtaBlock,
   FeaturedCaseStudiesBlock,
+  GithubProfileBlock,
   CalloutBlock,
   LinkListBlock,
 ];

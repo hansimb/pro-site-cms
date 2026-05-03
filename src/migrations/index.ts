@@ -1,6 +1,7 @@
 import * as migration_20260501_120000_remove_case_study_featured_columns from "./20260501_120000_remove_case_study_featured_columns";
 import * as migration_20260501_160000_add_case_study_structure_fields from "./20260501_160000_add_case_study_structure_fields";
 import * as migration_20260503_190000_add_site_settings_seo_fields from "./20260503_190000_add_site_settings_seo_fields";
+import * as migration_20260503_210000_add_contact_and_github_fields from "./20260503_210000_add_contact_and_github_fields";
 
 export const migrations = [
   {
@@ -17,5 +18,10 @@ export const migrations = [
     up: migration_20260503_190000_add_site_settings_seo_fields.up,
     down: migration_20260503_190000_add_site_settings_seo_fields.down,
     name: "20260503_190000_add_site_settings_seo_fields",
+  },
+  {
+    up: migration_20260503_210000_add_contact_and_github_fields.up,
+    down: migration_20260503_210000_add_contact_and_github_fields.down,
+    name: "20260503_210000_add_contact_and_github_fields",
   },
 ];

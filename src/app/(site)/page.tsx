@@ -1,5 +1,7 @@
 import NextLink from "next/link";
 import { Box, Grid, Heading, Link, Stack, Text } from "@chakra-ui/react";
+import { ContactModalTrigger } from "./components/contact-actions";
+import { getGithubSignalCards } from "@/features/site/github-stats";
 import { getSiteModel } from "@/features/site/data/payload-site";
 
 const interactivePanelProps = {
@@ -34,6 +36,24 @@ const linkHoverProps = {
 export default async function HomePage() {
   const site = await getSiteModel();
   const { hero, blocks } = site.homePage;
+  const githubSignalEntries = await Promise.all(
+    blocks.map(async (block, index) => {
+      if (block.blockType !== "githubProfile") {
+        return null;
+      }
+
+      return [
+        index,
+        await getGithubSignalCards(site.settings.contact.githubUrl),
+      ] as const;
+    }),
+  );
+  const githubSignalByIndex = new Map(
+    githubSignalEntries.filter(
+      (entry): entry is readonly [number, Awaited<ReturnType<typeof getGithubSignalCards>>] =>
+        Boolean(entry),
+    ),
+  );
 
   return (
     <Stack gap={{ base: 14, md: 20 }} position="relative">
@@ -269,14 +289,22 @@ export default async function HomePage() {
                           </Text>
                         </Stack>
                         <Stack direction={{ base: "column", md: "row" }} gap={3}>
-                          {block.primaryLink && (
-                            <Link asChild color="accent" fontSize="sm" textDecoration="none" {...linkHoverProps}>
-                              <NextLink href={block.primaryLink.href}>{block.primaryLink.label}</NextLink>
-                            </Link>
+                          {site.settings.contact.email && (
+                            <ContactModalTrigger
+                              color="accent"
+                              fontSize="sm"
+                              label={block.primaryLink?.label ?? "Email"}
+                            />
                           )}
-                          {block.secondaryLink && (
+                          {site.settings.contact.linkedinUrl && (
                             <Link asChild color="muted" fontSize="sm" textDecoration="none" {...linkHoverProps}>
-                              <NextLink href={block.secondaryLink.href}>{block.secondaryLink.label}</NextLink>
+                              <NextLink
+                                href={site.settings.contact.linkedinUrl}
+                                rel="noreferrer"
+                                target="_blank"
+                              >
+                                {block.secondaryLink?.label ?? "LinkedIn"}
+                              </NextLink>
                             </Link>
                           )}
                         </Stack>
@@ -335,6 +363,57 @@ export default async function HomePage() {
                       </Grid>
                     </Stack>
                   );
+
+                case "githubProfile": {
+                  const stats = githubSignalByIndex.get(index) ?? [];
+
+                  return (
+                    <Stack gap={6} key={`${block.blockType}-${index}`}>
+                      <Stack gap={3} maxW="3xl">
+                        <Heading as="h2" fontSize={{ base: "lg", md: "xl" }} letterSpacing="0">
+                          {block.heading}
+                        </Heading>
+                        {block.intro && (
+                          <Text color="muted" lineHeight="1.8">
+                            {block.intro}
+                          </Text>
+                        )}
+                      </Stack>
+                      {stats.length > 0 && (
+                        <Grid
+                          gap={{ base: 5, md: 6 }}
+                          templateColumns={{ base: "1fr", md: "repeat(3, minmax(0, 1fr))" }}
+                        >
+                          {stats.map((stat) => (
+                            <Box
+                              borderColor="edge"
+                              borderWidth="1px"
+                              bg="surface"
+                              key={stat.label}
+                              p={{ base: 6, md: 7 }}
+                              rounded="panel"
+                              {...interactivePanelProps}
+                            >
+                              <Stack gap={2}>
+                                <Text color="accent" fontSize={{ base: "lg", md: "xl" }} fontWeight="700">
+                                  {stat.value}
+                                </Text>
+                                <Text color="muted" fontSize="sm">
+                                  {stat.label}
+                                </Text>
+                              </Stack>
+                            </Box>
+                          ))}
+                        </Grid>
+                      )}
+                      <Link asChild color="accent" fontSize="sm" textDecoration="none" {...linkHoverProps}>
+                        <NextLink href={block.ctaUrl} rel="noreferrer" target="_blank">
+                          {block.ctaLabel}
+                        </NextLink>
+                      </Link>
+                    </Stack>
+                  );
+                }
 
                 case "linkList":
                   return (

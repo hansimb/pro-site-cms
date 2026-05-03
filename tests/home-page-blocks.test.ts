@@ -78,6 +78,13 @@ describe("home page content mapping", () => {
           },
         },
         {
+          blockType: "githubProfile",
+          heading: "GitHub",
+          intro: "Selected public work and coding signal.",
+          ctaLabel: "Open profile",
+          ctaUrl: "https://github.com/example",
+        },
+        {
           blockType: "linkList",
           heading: "Explore",
           links: [
@@ -146,6 +153,13 @@ describe("home page content mapping", () => {
         },
       },
       {
+        blockType: "githubProfile",
+        ctaLabel: "Open profile",
+        ctaUrl: "https://github.com/example",
+        heading: "GitHub",
+        intro: "Selected public work and coding signal.",
+      },
+      {
         blockType: "linkList",
         heading: "Explore",
         links: [
@@ -167,6 +181,7 @@ describe("home page content mapping", () => {
       "timeline",
       "contactCta",
       "featuredCaseStudies",
+      "githubProfile",
       "callout",
       "linkList",
     ]);
