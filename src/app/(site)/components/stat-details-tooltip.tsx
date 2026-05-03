@@ -1,0 +1,127 @@
+"use client";
+
+import {
+  Box,
+  Portal,
+  Stack,
+  Text,
+  Tooltip,
+} from "@chakra-ui/react";
+
+function InfoGlyph() {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      height="14"
+      viewBox="0 0 16 16"
+      width="14"
+    >
+      <circle
+        cx="8"
+        cy="8"
+        r="6.25"
+        stroke="currentColor"
+        strokeOpacity="0.6"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M8 6.3V10"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeOpacity="0.9"
+        strokeWidth="1.5"
+      />
+      <circle cx="8" cy="4.6" fill="currentColor" r="0.8" />
+    </svg>
+  );
+}
+
+type StatDetailsTooltipProps = {
+  details: string[];
+  label: string;
+};
+
+export function StatDetailsTooltip({
+  details,
+  label,
+}: StatDetailsTooltipProps) {
+  if (details.length === 0) {
+    return null;
+  }
+
+  return (
+    <Tooltip.Root
+      closeDelay={80}
+      lazyMount
+      openDelay={120}
+      positioning={{ placement: "top-start" }}
+    >
+      <Tooltip.Trigger asChild>
+        <Box
+          aria-label={`${label}. Included repositories: ${details.join(", ")}`}
+          as="button"
+          color="fg.subtle"
+          cursor="help"
+          display="inline-flex"
+          h="16px"
+          justifyContent="center"
+          ml={2}
+          transition="color 160ms ease, opacity 160ms ease"
+          verticalAlign="middle"
+          w="16px"
+          _focusVisible={{
+            outline: "none",
+            color: "fg.default",
+            boxShadow: "0 0 0 3px rgba(0, 255, 136, 0.08)",
+            borderRadius: "999px",
+          }}
+          _hover={{
+            color: "fg.default",
+            opacity: 0.9,
+          }}
+        >
+          <InfoGlyph />
+        </Box>
+      </Tooltip.Trigger>
+      <Portal>
+        <Tooltip.Positioner>
+          <Tooltip.Content
+            bg="rgba(12, 12, 12, 0.98)"
+            borderColor="rgba(255, 255, 255, 0.12)"
+            borderRadius="16px"
+            borderWidth="1px"
+            boxShadow="0 18px 50px rgba(0, 0, 0, 0.45)"
+            color="fg.default"
+            maxW="280px"
+            px={3.5}
+            py={3}
+          >
+            <Tooltip.Arrow>
+              <Tooltip.ArrowTip />
+            </Tooltip.Arrow>
+            <Stack gap={2}>
+              <Text as="div" color="fg.default" fontSize="xs" fontWeight="700">
+                Included repositories
+              </Text>
+              <Stack gap={1}>
+                {details.map((detail) => (
+                  <Text
+                    as="div"
+                    color="fg.muted"
+                    fontFamily="mono"
+                    fontSize="xs"
+                    key={detail}
+                    lineHeight="1.5"
+                  >
+                    {detail}
+                  </Text>
+                ))}
+              </Stack>
+            </Stack>
+          </Tooltip.Content>
+        </Tooltip.Positioner>
+      </Portal>
+    </Tooltip.Root>
+  );
+}

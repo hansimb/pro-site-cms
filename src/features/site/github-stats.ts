@@ -40,9 +40,9 @@ type WakatimeResponse = {
   };
 };
 
-function parseGithubRepository(repoUrl?: string):
-  | { owner: string; repo: string }
-  | undefined {
+function parseGithubRepository(
+  repoUrl?: string,
+): { owner: string; repo: string } | undefined {
   if (!repoUrl) {
     return undefined;
   }
@@ -331,7 +331,9 @@ async function getProductionDeploymentCount(
 
   const productionRepositories = await Promise.all(
     Array.from(uniqueRepositories.values()).map(async (repository) =>
-      (await hasProductionDeployment(token, repository)) ? repository : undefined,
+      (await hasProductionDeployment(token, repository))
+        ? repository
+        : undefined,
     ),
   );
 
@@ -373,8 +375,7 @@ export function compactGithubStats(cards: GithubStatCard[]): Array<{
       details?: string[];
       label: string;
       value: string;
-    } =>
-      typeof card.value === "string" && card.value.trim().length > 0,
+    } => typeof card.value === "string" && card.value.trim().length > 0,
   );
 }
 
@@ -394,14 +395,13 @@ export async function getGithubSignalCards(
     contributionsAllTime,
     codingTime,
     productionDeploymentStats,
-  ] =
-    await Promise.all([
-      getPublicRepositoryCount(username),
-      getContributionCount(username, "year"),
-      getContributionCount(username, "allTime"),
-      getTrackedCodingTime(),
-      getProductionDeploymentCount(githubUrl, repoUrl),
-    ]);
+  ] = await Promise.all([
+    getPublicRepositoryCount(username),
+    getContributionCount(username, "year"),
+    getContributionCount(username, "allTime"),
+    getTrackedCodingTime(),
+    getProductionDeploymentCount(githubUrl, repoUrl),
+  ]);
 
   return compactGithubStats([
     {
@@ -427,7 +427,7 @@ export async function getGithubSignalCards(
     {
       key: "productionDeployments",
       details: productionDeploymentStats.repositories,
-      label: "Repositories deployed to production",
+      label: "Projects deployed to prod.",
       value: productionDeploymentStats.value,
     },
   ]);
