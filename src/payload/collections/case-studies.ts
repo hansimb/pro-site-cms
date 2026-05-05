@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { revalidatePublicSite } from "../hooks/revalidate-site";
 
 export const CaseStudies: CollectionConfig = {
   slug: "case-studies",
@@ -8,6 +9,10 @@ export const CaseStudies: CollectionConfig = {
   },
   versions: {
     drafts: true,
+  },
+  hooks: {
+    afterChange: [async () => revalidatePublicSite()],
+    afterDelete: [async () => revalidatePublicSite()],
   },
   fields: [
     {

@@ -1,7 +1,11 @@
 import type { GlobalConfig } from "payload";
+import { revalidatePublicSite } from "../hooks/revalidate-site";
 
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
+  hooks: {
+    afterChange: [async () => revalidatePublicSite()],
+  },
   fields: [
     {
       name: "siteTitle",
