@@ -18,6 +18,7 @@ const dirname = path.dirname(filename);
 const payloadEnvironment = getPayloadEnvironment();
 const defaultFromAddress = process.env.PAYLOAD_FROM_ADDRESS ?? "no-reply@localhost";
 const defaultFromName = process.env.PAYLOAD_FROM_NAME ?? "imberg.dev";
+const blobReadWriteToken = process.env.BLOB_READ_WRITE_TOKEN;
 
 const consoleEmailAdapter: PayloadEmailAdapter = () => ({
   defaultFromAddress,
@@ -53,15 +54,16 @@ export default buildConfig({
   email: consoleEmailAdapter,
   editor: lexicalEditor(),
   globals: [SiteSettings, HomePage],
-  plugins: [
-    vercelBlobStorage({
-      collections: {
-        media: true,
-      },
-      // Vercel injects this after Blob storage is connected to the project.
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-    }),
-  ],
+  plugins: blobReadWriteToken
+    ? [
+        vercelBlobStorage({
+          collections: {
+            media: true,
+          },
+          token: blobReadWriteToken,
+        }),
+      ]
+    : [],
   secret: payloadEnvironment.payloadSecret,
   sharp,
   typescript: {
