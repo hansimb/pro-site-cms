@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Box, Button, Heading, Link, Stack, Text } from "@chakra-ui/react";
 import { getArticleBySlug, getSiteModel } from "@/features/site/data/payload-site";
 import { ArticleCitationBox } from "@/app/(site)/components/article-citation-box";
+import { ArticleShareActions } from "@/app/(site)/components/article-share-actions";
 import { buildArticleMetadata } from "@/features/site/metadata";
 import { buildReferenceHref, formatArticleCitation } from "@/features/site/article-citations";
 import { RichTextContent } from "@/app/(site)/components/rich-text-content";
@@ -94,6 +95,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         content={article.content}
         referenceCount={article.references.length}
       />
+
+      <ArticleShareActions articleUrl={articleUrl} title={article.title} />
 
       <ArticleCitationBox citation={citation} />
 
