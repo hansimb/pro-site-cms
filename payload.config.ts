@@ -1,5 +1,6 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildConfig, type PayloadEmailAdapter } from "payload";
@@ -52,6 +53,15 @@ export default buildConfig({
   email: consoleEmailAdapter,
   editor: lexicalEditor(),
   globals: [SiteSettings, HomePage],
+  plugins: [
+    vercelBlobStorage({
+      collections: {
+        media: true,
+      },
+      // Vercel injects this after Blob storage is connected to the project.
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    }),
+  ],
   secret: payloadEnvironment.payloadSecret,
   sharp,
   typescript: {
