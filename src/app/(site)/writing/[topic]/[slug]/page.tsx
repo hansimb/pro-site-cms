@@ -56,8 +56,6 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const citation = formatArticleCitation({
     articleUrl,
     citationAuthors: article.citationAuthors,
-    citationPublication: article.citationPublication,
-    citationTitle: article.citationTitle,
     publishedAt: article.publishedAt,
     siteTitle: site.settings.siteTitle,
     title: article.title,

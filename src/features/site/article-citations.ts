@@ -5,8 +5,6 @@ type CitationPart =
 type FormatArticleCitationInput = {
   articleUrl: string;
   citationAuthors?: string;
-  citationPublication?: string;
-  citationTitle?: string;
   publishedAt?: string;
   siteTitle: string;
   title: string;
@@ -28,10 +26,9 @@ export function buildReferenceHref(index: number) {
 }
 
 export function formatArticleCitation(input: FormatArticleCitationInput) {
-  const title = trimToUndefined(input.citationTitle) ?? input.title;
+  const title = input.title;
   const authors = trimToUndefined(input.citationAuthors) ?? "Unknown author";
-  const publication =
-    trimToUndefined(input.citationPublication) ?? input.siteTitle;
+  const publication = input.siteTitle;
 
   const date = input.publishedAt
     ? new Date(input.publishedAt).toLocaleDateString("en-US", {

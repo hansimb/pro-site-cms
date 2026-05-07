@@ -9,8 +9,6 @@ describe("article metadata", () => {
     const article: SiteArticle = {
       canonicalUrl: "https://example.com/canonical",
       citationAuthors: "H. Imberg",
-      citationPublication: "imberg.dev",
-      citationTitle: "Systems Outlook",
       content: null,
       excerpt: "Plain excerpt",
       keywords: ["macro", "software"],

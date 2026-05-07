@@ -1,6 +1,16 @@
 import type { CollectionConfig } from "payload";
 import { revalidatePublicSite } from "../hooks/revalidate-site";
 
+export function formatArticleSlug(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .replace(/-{2,}/g, "-");
+}
+
 export const Articles: CollectionConfig = {
   slug: "articles",
   admin: {
@@ -11,6 +21,20 @@ export const Articles: CollectionConfig = {
     drafts: true,
   },
   hooks: {
+    beforeValidate: [
+      async ({ data }) => {
+        if (!data) {
+          return data;
+        }
+
+        if (typeof data.title === "string" && data.title.trim().length > 0) {
+          const nextSlug = formatArticleSlug(data.title);
+          data.slug = nextSlug;
+        }
+
+        return data;
+      },
+    ],
     afterChange: [async () => revalidatePublicSite()],
     afterDelete: [async () => revalidatePublicSite()],
   },
@@ -23,6 +47,10 @@ export const Articles: CollectionConfig = {
     {
       name: "slug",
       type: "text",
+      admin: {
+        hidden: true,
+        readOnly: true,
+      },
       index: true,
       required: true,
       unique: true,
@@ -40,14 +68,16 @@ export const Articles: CollectionConfig = {
     {
       name: "seoTitle",
       type: "text",
+      admin: {
+        description: "Optional. If empty, the article title is used automatically.",
+      },
     },
     {
       name: "seoDescription",
       type: "textarea",
-    },
-    {
-      name: "canonicalUrl",
-      type: "text",
+      admin: {
+        description: "Optional. If empty, the article excerpt is used automatically.",
+      },
     },
     {
       name: "keywords",
@@ -61,16 +91,12 @@ export const Articles: CollectionConfig = {
       ],
     },
     {
-      name: "citationTitle",
-      type: "text",
-    },
-    {
       name: "citationAuthors",
       type: "text",
-    },
-    {
-      name: "citationPublication",
-      type: "text",
+      admin: {
+        description: "Optional. Used for the generated article reference box.",
+      },
+      label: "Article authors",
     },
     {
       name: "publishedAt",

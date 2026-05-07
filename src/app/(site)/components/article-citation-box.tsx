@@ -30,7 +30,7 @@ export function ArticleCitationBox({ citation }: ArticleCitationBoxProps) {
     >
       <Stack gap={3}>
         <Text fontSize="sm" fontWeight="semibold" textTransform="uppercase">
-          Cite this analysis
+          Article reference
         </Text>
         <Code
           display="block"
@@ -48,7 +48,7 @@ export function ArticleCitationBox({ citation }: ArticleCitationBoxProps) {
           size="sm"
           variant="outline"
         >
-          {copied ? "Copied" : "Copy citation"}
+          {copied ? "Copied" : "Copy reference"}
         </Button>
       </Stack>
     </Box>

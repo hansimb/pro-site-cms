@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { getFallbackSiteModel } from "../src/features/site/data/payload-site";
+import {
+  getFallbackSiteModel,
+  isPublishedArticleStatus,
+} from "../src/features/site/data/payload-site";
 
 describe("site data contract", () => {
   it("provides a minimal public model while Payload content is empty", () => {
@@ -28,5 +31,11 @@ describe("site data contract", () => {
         linkedinUrl: undefined,
       },
     });
+  });
+
+  it("treats only published articles as public content", () => {
+    expect(isPublishedArticleStatus("published")).toBe(true);
+    expect(isPublishedArticleStatus("draft")).toBe(false);
+    expect(isPublishedArticleStatus(undefined)).toBe(false);
   });
 });

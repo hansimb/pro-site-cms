@@ -51,6 +51,7 @@ type RawArticleDoc = {
   title?: unknown;
   topic?: unknown;
   updatedAt?: unknown;
+  _status?: unknown;
 };
 
 type RawCaseStudyDoc = {
@@ -110,8 +111,6 @@ export type SiteCaseStudySummary = {
 export type SiteArticle = {
   canonicalUrl?: string;
   citationAuthors?: string;
-  citationPublication?: string;
-  citationTitle?: string;
   content: unknown;
   excerpt: string;
   keywords: string[];
@@ -167,6 +166,10 @@ export type SiteModel = {
   };
   topics: string[];
 };
+
+export function isPublishedArticleStatus(status: unknown) {
+  return status === "published";
+}
 
 function normalizeSeoSettings(
   siteSettings: RawSiteSettings | null | undefined,
@@ -346,6 +349,9 @@ export async function getSiteModel() {
     const articleDocs = Array.isArray(articlesResponse.docs)
       ? (articlesResponse.docs as RawArticleDoc[])
       : [];
+    const publishedArticleDocs = articleDocs.filter((article) =>
+      isPublishedArticleStatus(article._status),
+    );
     const caseStudyDocs = Array.isArray(caseStudiesResponse.docs)
       ? (caseStudiesResponse.docs as RawCaseStudyDoc[])
       : [];
@@ -354,6 +360,7 @@ export async function getSiteModel() {
     const topics = Array.from(
       new Set(
         articleDocs
+          .filter((article) => isPublishedArticleStatus(article._status))
           .map((article) => String(article.topic ?? ""))
           .filter(Boolean),
       ),
@@ -382,7 +389,7 @@ export async function getSiteModel() {
       },
       homePage: mapHomePageData(homePage),
       navigation: normalizeNavigation(settingsData?.navigation),
-      articles: articleDocs.map(mapArticleSummary),
+      articles: publishedArticleDocs.map(mapArticleSummary),
       caseStudies: caseStudyDocs.map(mapCaseStudySummary),
       topics,
     };
@@ -414,7 +421,9 @@ export async function getArticlesByTopic(
       ? (response.docs as RawArticleDoc[])
       : [];
 
-    return docs.map(mapArticleSummary);
+    return docs
+      .filter((article) => isPublishedArticleStatus(article._status))
+      .map(mapArticleSummary);
   } catch (error) {
     console.error(`Failed to load articles for topic ${topic}`, error);
     return [];
@@ -443,7 +452,7 @@ export async function getArticleBySlug(
     });
 
     const doc = response.docs?.[0] as RawArticleDoc | undefined;
-    if (!doc) return null;
+    if (!doc || !isPublishedArticleStatus(doc._status)) return null;
 
     return {
       canonicalUrl:
@@ -454,15 +463,6 @@ export async function getArticleBySlug(
         typeof doc.citationAuthors === "string" &&
         doc.citationAuthors.trim().length > 0
           ? doc.citationAuthors
-          : undefined,
-      citationPublication:
-        typeof doc.citationPublication === "string" &&
-        doc.citationPublication.trim().length > 0
-          ? doc.citationPublication
-          : undefined,
-      citationTitle:
-        typeof doc.citationTitle === "string" && doc.citationTitle.trim().length > 0
-          ? doc.citationTitle
           : undefined,
       title: String(doc.title ?? ""),
       topic: String(doc.topic ?? ""),

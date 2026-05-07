@@ -1,23 +1,31 @@
 import { describe, expect, it } from "vitest";
-import { Articles } from "../src/payload/collections/articles";
+import { Articles, formatArticleSlug } from "../src/payload/collections/articles";
 
 describe("article authoring contract", () => {
   it("adds evergreen SEO and citation fields to articles", () => {
     const fieldNames = Articles.fields.map((field) =>
       "name" in field ? field.name : undefined,
     );
+    const slugField = Articles.fields.find(
+      (field) => "name" in field && field.name === "slug",
+    );
 
     expect(fieldNames).toEqual(
       expect.arrayContaining([
         "seoTitle",
         "seoDescription",
-        "canonicalUrl",
         "keywords",
-        "citationTitle",
         "citationAuthors",
-        "citationPublication",
       ]),
     );
+    expect(fieldNames).not.toContain("canonicalUrl");
+    expect(fieldNames).not.toContain("citationTitle");
+    expect(fieldNames).not.toContain("citationPublication");
+    expect(
+      slugField && "admin" in slugField
+        ? (slugField.admin as { hidden?: boolean } | undefined)?.hidden
+        : undefined,
+    ).toBe(true);
   });
 
   it("expands references beyond a plain label and URL", () => {
@@ -36,5 +44,13 @@ describe("article authoring contract", () => {
         "accessedAt",
       ]),
     );
+  });
+
+  it("creates stable slugs from article titles", () => {
+    expect(
+      formatArticleSlug(
+        "AI, SaaS and the Semiconductor Cycle: A Longer-Term Technology Outlook",
+      ),
+    ).toBe("ai-saas-and-the-semiconductor-cycle-a-longer-term-technology-outlook");
   });
 });

@@ -1,5 +1,5 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
-import { EXPERIMENTAL_TableFeature, lexicalEditor } from "@payloadcms/richtext-lexical";
+import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildConfig, type PayloadEmailAdapter } from "payload";
@@ -50,9 +50,7 @@ export default buildConfig({
     },
   }),
   email: consoleEmailAdapter,
-  editor: lexicalEditor({
-    features: ({ defaultFeatures }) => [...defaultFeatures, EXPERIMENTAL_TableFeature()],
-  }),
+  editor: lexicalEditor(),
   globals: [SiteSettings, HomePage],
   secret: payloadEnvironment.payloadSecret,
   sharp,

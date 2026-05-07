@@ -7,11 +7,9 @@ describe("article citation helpers", () => {
       formatArticleCitation({
         articleUrl: "https://imberg.dev/writing/tech/outlook",
         citationAuthors: "H. Imberg",
-        citationPublication: "imberg.dev",
-        citationTitle: "Tech & Economics Outlook",
         publishedAt: "2026-05-07T00:00:00.000Z",
         siteTitle: "imberg.dev",
-        title: "Fallback title",
+        title: "Tech & Economics Outlook",
       }),
     ).toContain('H. Imberg, "Tech & Economics Outlook," imberg.dev, May 7, 2026. [Online]. Available: https://imberg.dev/writing/tech/outlook');
   });
