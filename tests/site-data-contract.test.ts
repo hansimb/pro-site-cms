@@ -3,6 +3,7 @@ import {
   hydrateLexicalUploadNodes,
   getFallbackSiteModel,
   isPublishedArticleStatus,
+  parseArticleKeywords,
 } from "../src/features/site/data/payload-site";
 
 describe("site data contract", () => {
@@ -91,5 +92,18 @@ describe("site data contract", () => {
       mimeType: "image/png",
       url: "/api/media/file/semiconductor-revenues-2026.png",
     });
+  });
+
+  it("parses comma-separated keywords into a clean tag list", () => {
+    expect(
+      parseArticleKeywords(
+        " semiconductor cyclicality, AI infrastructure, , NVIDIA , SaaS ",
+      ),
+    ).toEqual([
+      "semiconductor cyclicality",
+      "AI infrastructure",
+      "NVIDIA",
+      "SaaS",
+    ]);
   });
 });

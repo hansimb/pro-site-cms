@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import NextLink from "next/link";
 import { notFound } from "next/navigation";
-import { Box, Button, Heading, Link, Stack, Text } from "@chakra-ui/react";
-import { getArticleBySlug, getSiteModel } from "@/features/site/data/payload-site";
+import { Box, Button, Heading, HStack, Link, Stack, Text } from "@chakra-ui/react";
 import { ArticleCitationBox } from "@/app/(site)/components/article-citation-box";
 import { ArticleShareActions } from "@/app/(site)/components/article-share-actions";
-import { buildArticleMetadata } from "@/features/site/metadata";
-import { buildReferenceHref, formatArticleCitation } from "@/features/site/article-citations";
 import { RichTextContent } from "@/app/(site)/components/rich-text-content";
+import { buildReferenceHref, formatArticleCitation } from "@/features/site/article-citations";
+import { getArticleBySlug, getSiteModel } from "@/features/site/data/payload-site";
+import { buildArticleMetadata } from "@/features/site/metadata";
 
 interface ArticlePageProps {
   params: Promise<{ topic: string; slug: string }>;
@@ -65,7 +65,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   return (
     <Stack gap={6}>
       <Stack gap={3} maxW="4xl">
-        <Button asChild variant="ghost" alignSelf="start" size="sm">
+        <Button alignSelf="start" asChild size="sm" variant="ghost">
           <NextLink href={`/writing/${encodeURIComponent(decodedTopic)}`}>
             ← Back to {decodedTopic}
           </NextLink>
@@ -85,9 +85,23 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </Text>
         )}
         {article.keywords.length > 0 && (
-          <Text color="muted" fontSize="sm">
-            {article.keywords.join(" • ")}
-          </Text>
+          <HStack align="start" flexWrap="wrap" gap={2}>
+            {article.keywords.map((keyword) => (
+              <Text
+                bg="surface"
+                border="1px solid"
+                borderColor="border"
+                borderRadius="full"
+                color="muted"
+                fontSize="xs"
+                key={keyword}
+                px={3}
+                py={1}
+              >
+                {keyword}
+              </Text>
+            ))}
+          </HStack>
         )}
       </Stack>
 
@@ -100,7 +114,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       <ArticleCitationBox citation={citation} />
 
-      {article.references && article.references.length > 0 && (
+      {article.references.length > 0 && (
         <Stack gap={3} maxW="4xl">
           <Heading as="h2" fontSize="lg" letterSpacing="0">
             References

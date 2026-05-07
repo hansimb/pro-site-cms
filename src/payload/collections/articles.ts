@@ -11,6 +11,13 @@ export function formatArticleSlug(value: string) {
     .replace(/-{2,}/g, "-");
 }
 
+function normalizeKeywordList(value: string) {
+  return value
+    .split(",")
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
+}
+
 export const Articles: CollectionConfig = {
   slug: "articles",
   admin: {
@@ -32,7 +39,41 @@ export const Articles: CollectionConfig = {
           data.slug = nextSlug;
         }
 
+        if (typeof data.keywordsText === "string") {
+          data.keywords = normalizeKeywordList(data.keywordsText).map((keyword) => ({
+            keyword,
+          }));
+        }
+
         return data;
+      },
+    ],
+    afterRead: [
+      async ({ doc }) => {
+        if (!doc) {
+          return doc;
+        }
+
+        if (
+          typeof doc.keywordsText !== "string" ||
+          doc.keywordsText.trim().length === 0
+        ) {
+          const keywords = Array.isArray(doc.keywords)
+            ? doc.keywords.flatMap((item: unknown) =>
+                item &&
+                typeof item === "object" &&
+                "keyword" in item &&
+                typeof item.keyword === "string" &&
+                item.keyword.trim().length > 0
+                  ? [item.keyword.trim()]
+                  : [],
+              )
+            : [];
+
+          doc.keywordsText = keywords.join(", ");
+        }
+
+        return doc;
       },
     ],
     afterChange: [async () => revalidatePublicSite()],
@@ -82,6 +123,9 @@ export const Articles: CollectionConfig = {
     {
       name: "keywords",
       type: "array",
+      admin: {
+        hidden: true,
+      },
       fields: [
         {
           name: "keyword",
@@ -89,6 +133,15 @@ export const Articles: CollectionConfig = {
           required: true,
         },
       ],
+    },
+    {
+      name: "keywordsText",
+      type: "text",
+      admin: {
+        description:
+          "Add keywords as a single comma-separated list. They will be formatted automatically on the site.",
+      },
+      label: "Keywords",
     },
     {
       name: "citationAuthors",

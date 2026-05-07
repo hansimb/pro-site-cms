@@ -9,12 +9,19 @@ describe("article authoring contract", () => {
     const slugField = Articles.fields.find(
       (field) => "name" in field && field.name === "slug",
     );
+    const keywordsField = Articles.fields.find(
+      (field) => "name" in field && field.name === "keywords",
+    );
+    const keywordsTextField = Articles.fields.find(
+      (field) => "name" in field && field.name === "keywordsText",
+    );
 
     expect(fieldNames).toEqual(
       expect.arrayContaining([
         "seoTitle",
         "seoDescription",
         "keywords",
+        "keywordsText",
         "citationAuthors",
       ]),
     );
@@ -26,6 +33,14 @@ describe("article authoring contract", () => {
         ? (slugField.admin as { hidden?: boolean } | undefined)?.hidden
         : undefined,
     ).toBe(true);
+    expect(
+      keywordsField && "admin" in keywordsField
+        ? (keywordsField.admin as { hidden?: boolean } | undefined)?.hidden
+        : undefined,
+    ).toBe(true);
+    expect(keywordsTextField && "type" in keywordsTextField ? keywordsTextField.type : undefined).toBe(
+      "text",
+    );
   });
 
   it("expands references beyond a plain label and URL", () => {

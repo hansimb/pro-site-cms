@@ -43,6 +43,7 @@ type RawArticleDoc = {
   content?: unknown;
   excerpt?: unknown;
   keywords?: unknown;
+  keywordsText?: unknown;
   publishedAt?: unknown;
   references?: unknown;
   seoDescription?: unknown;
@@ -179,6 +180,17 @@ export type SiteModel = {
 
 export function isPublishedArticleStatus(status: unknown) {
   return status === "published";
+}
+
+export function parseArticleKeywords(value: unknown) {
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((keyword) => keyword.trim())
+      .filter(Boolean);
+  }
+
+  return [];
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -574,6 +586,8 @@ export async function getArticleBySlug(
       ? (mediaResponse.docs as RawMediaDoc[])
       : [];
 
+    const parsedKeywords = parseArticleKeywords(doc.keywordsText);
+
     return {
       canonicalUrl:
         typeof doc.canonicalUrl === "string" && doc.canonicalUrl.trim().length > 0
@@ -588,16 +602,19 @@ export async function getArticleBySlug(
       topic: String(doc.topic ?? ""),
       excerpt: String(doc.excerpt ?? ""),
       content: hydrateLexicalUploadNodes(doc.content, mediaDocs),
-      keywords: Array.isArray(doc.keywords)
-        ? doc.keywords.flatMap((item) => {
-            const keyword = item as RawKeyword | null | undefined;
+      keywords:
+        parsedKeywords.length > 0
+          ? parsedKeywords
+          : Array.isArray(doc.keywords)
+            ? doc.keywords.flatMap((item) => {
+                const keyword = item as RawKeyword | null | undefined;
 
-            return typeof keyword?.keyword === "string" &&
-              keyword.keyword.trim().length > 0
-              ? [keyword.keyword]
-              : [];
-          })
-        : [],
+                return typeof keyword?.keyword === "string" &&
+                  keyword.keyword.trim().length > 0
+                  ? [keyword.keyword]
+                  : [];
+              })
+            : [],
       publishedAt:
         typeof doc.publishedAt === "string" ? doc.publishedAt : undefined,
       updatedAt:
