@@ -81,6 +81,16 @@ type RawKeyword = {
   keyword?: unknown;
 };
 
+type RawMediaDoc = {
+  alt?: unknown;
+  filename?: unknown;
+  height?: unknown;
+  id?: unknown;
+  mimeType?: unknown;
+  url?: unknown;
+  width?: unknown;
+};
+
 type RawCaseStudyLink = {
   href?: unknown;
   label?: unknown;
@@ -169,6 +179,98 @@ export type SiteModel = {
 
 export function isPublishedArticleStatus(status: unknown) {
   return status === "published";
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+function normalizeMediaDoc(media: RawMediaDoc) {
+  return {
+    id:
+      typeof media.id === "number" || typeof media.id === "string"
+        ? media.id
+        : "",
+    alt: typeof media.alt === "string" ? media.alt : "",
+    filename: typeof media.filename === "string" ? media.filename : "",
+    mimeType: typeof media.mimeType === "string" ? media.mimeType : "",
+    url: typeof media.url === "string" ? media.url : "",
+    width: typeof media.width === "number" ? media.width : undefined,
+    height: typeof media.height === "number" ? media.height : undefined,
+  };
+}
+
+function collectLexicalUploadIds(value: unknown, ids = new Set<string>()) {
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      collectLexicalUploadIds(item, ids);
+    }
+
+    return ids;
+  }
+
+  if (!isRecord(value)) {
+    return ids;
+  }
+
+  if (
+    value.type === "upload" &&
+    value.relationTo === "media" &&
+    (typeof value.value === "number" || typeof value.value === "string")
+  ) {
+    ids.add(String(value.value));
+  }
+
+  for (const child of Object.values(value)) {
+    collectLexicalUploadIds(child, ids);
+  }
+
+  return ids;
+}
+
+export function hydrateLexicalUploadNodes(content: unknown, mediaDocs: RawMediaDoc[]) {
+  if (!content) {
+    return content;
+  }
+
+  const mediaById = new Map(
+    mediaDocs
+      .map(normalizeMediaDoc)
+      .filter((media) => String(media.id).length > 0)
+      .map((media) => [String(media.id), media] as const),
+  );
+
+  const hydrate = (value: unknown): unknown => {
+    if (Array.isArray(value)) {
+      return value.map(hydrate);
+    }
+
+    if (!isRecord(value)) {
+      return value;
+    }
+
+    const next: Record<string, unknown> = {};
+
+    for (const [key, child] of Object.entries(value)) {
+      next[key] = hydrate(child);
+    }
+
+    if (
+      next.type === "upload" &&
+      next.relationTo === "media" &&
+      (typeof next.value === "number" || typeof next.value === "string")
+    ) {
+      const hydratedMedia = mediaById.get(String(next.value));
+
+      if (hydratedMedia) {
+        next.value = hydratedMedia;
+      }
+    }
+
+    return next;
+  };
+
+  return hydrate(content);
 }
 
 function normalizeSeoSettings(
@@ -454,6 +556,24 @@ export async function getArticleBySlug(
     const doc = response.docs?.[0] as RawArticleDoc | undefined;
     if (!doc || !isPublishedArticleStatus(doc._status)) return null;
 
+    const uploadIds = Array.from(collectLexicalUploadIds(doc.content));
+    const mediaResponse =
+      uploadIds.length > 0
+        ? await instance.find({
+            collection: "media",
+            where: {
+              id: {
+                in: uploadIds,
+              },
+            },
+            limit: uploadIds.length,
+            overrideAccess: true,
+          })
+        : null;
+    const mediaDocs = Array.isArray(mediaResponse?.docs)
+      ? (mediaResponse.docs as RawMediaDoc[])
+      : [];
+
     return {
       canonicalUrl:
         typeof doc.canonicalUrl === "string" && doc.canonicalUrl.trim().length > 0
@@ -467,7 +587,7 @@ export async function getArticleBySlug(
       title: String(doc.title ?? ""),
       topic: String(doc.topic ?? ""),
       excerpt: String(doc.excerpt ?? ""),
-      content: doc.content,
+      content: hydrateLexicalUploadNodes(doc.content, mediaDocs),
       keywords: Array.isArray(doc.keywords)
         ? doc.keywords.flatMap((item) => {
             const keyword = item as RawKeyword | null | undefined;
