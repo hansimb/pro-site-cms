@@ -32,6 +32,7 @@ describe("site metadata helpers", () => {
     const article: SiteArticle = {
       content: null,
       excerpt: "A practical article about building software through real projects.",
+      keywords: [],
       publishedAt: "2026-05-03T10:00:00.000Z",
       references: [],
       title: "Started Through Real Projects",

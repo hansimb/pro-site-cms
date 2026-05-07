@@ -36,13 +36,21 @@ type RawSiteSeo = {
 };
 
 type RawArticleDoc = {
+  canonicalUrl?: unknown;
+  citationAuthors?: unknown;
+  citationPublication?: unknown;
+  citationTitle?: unknown;
   content?: unknown;
   excerpt?: unknown;
+  keywords?: unknown;
   publishedAt?: unknown;
   references?: unknown;
+  seoDescription?: unknown;
+  seoTitle?: unknown;
   slug?: unknown;
   title?: unknown;
   topic?: unknown;
+  updatedAt?: unknown;
 };
 
 type RawCaseStudyDoc = {
@@ -61,8 +69,15 @@ type RawCaseStudyDoc = {
 };
 
 type RawReference = {
+  accessedAt?: unknown;
   label?: unknown;
+  publishedAt?: unknown;
+  publisher?: unknown;
   url?: unknown;
+};
+
+type RawKeyword = {
+  keyword?: unknown;
 };
 
 type RawCaseStudyLink = {
@@ -93,12 +108,26 @@ export type SiteCaseStudySummary = {
 };
 
 export type SiteArticle = {
+  canonicalUrl?: string;
+  citationAuthors?: string;
+  citationPublication?: string;
+  citationTitle?: string;
   content: unknown;
   excerpt: string;
+  keywords: string[];
   publishedAt?: string;
-  references?: Array<{ label: string; url: string }>;
+  references: Array<{
+    accessedAt?: string;
+    label: string;
+    publishedAt?: string;
+    publisher?: string;
+    url: string;
+  }>;
+  seoDescription?: string;
+  seoTitle?: string;
   title: string;
   topic: string;
+  updatedAt?: string;
 };
 
 export type SiteCaseStudy = {
@@ -417,23 +446,80 @@ export async function getArticleBySlug(
     if (!doc) return null;
 
     return {
+      canonicalUrl:
+        typeof doc.canonicalUrl === "string" && doc.canonicalUrl.trim().length > 0
+          ? doc.canonicalUrl
+          : undefined,
+      citationAuthors:
+        typeof doc.citationAuthors === "string" &&
+        doc.citationAuthors.trim().length > 0
+          ? doc.citationAuthors
+          : undefined,
+      citationPublication:
+        typeof doc.citationPublication === "string" &&
+        doc.citationPublication.trim().length > 0
+          ? doc.citationPublication
+          : undefined,
+      citationTitle:
+        typeof doc.citationTitle === "string" && doc.citationTitle.trim().length > 0
+          ? doc.citationTitle
+          : undefined,
       title: String(doc.title ?? ""),
       topic: String(doc.topic ?? ""),
       excerpt: String(doc.excerpt ?? ""),
       content: doc.content,
+      keywords: Array.isArray(doc.keywords)
+        ? doc.keywords.flatMap((item) => {
+            const keyword = item as RawKeyword | null | undefined;
+
+            return typeof keyword?.keyword === "string" &&
+              keyword.keyword.trim().length > 0
+              ? [keyword.keyword]
+              : [];
+          })
+        : [],
       publishedAt:
         typeof doc.publishedAt === "string" ? doc.publishedAt : undefined,
+      updatedAt:
+        typeof doc.updatedAt === "string" ? doc.updatedAt : undefined,
       references: Array.isArray(doc.references)
         ? doc.references.flatMap((reference) =>
             (() => {
               const item = reference as RawReference | null | undefined;
 
               return item?.label && item?.url
-                ? [{ label: String(item.label), url: String(item.url) }]
+                ? [
+                    {
+                      accessedAt:
+                        typeof item.accessedAt === "string"
+                          ? item.accessedAt
+                          : undefined,
+                      label: String(item.label),
+                      publishedAt:
+                        typeof item.publishedAt === "string"
+                          ? item.publishedAt
+                          : undefined,
+                      publisher:
+                        typeof item.publisher === "string" &&
+                        item.publisher.trim().length > 0
+                          ? item.publisher
+                          : undefined,
+                      url: String(item.url),
+                    },
+                  ]
                 : [];
             })(),
           )
         : [],
+      seoDescription:
+        typeof doc.seoDescription === "string" &&
+        doc.seoDescription.trim().length > 0
+          ? doc.seoDescription
+          : undefined,
+      seoTitle:
+        typeof doc.seoTitle === "string" && doc.seoTitle.trim().length > 0
+          ? doc.seoTitle
+          : undefined,
     };
   } catch (error) {
     console.error(`Failed to load article ${topic}/${slug}`, error);

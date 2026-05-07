@@ -86,23 +86,30 @@ export function buildArticleMetadata(
   site: SiteModel,
   article: SiteArticle,
 ): Metadata {
+  const title = trimToUndefined(article.seoTitle) ?? article.title;
   const description =
+    trimToUndefined(article.seoDescription) ??
     trimToUndefined(article.excerpt) ??
     trimToUndefined(site.settings.seo.metaDescription) ??
     site.settings.siteDescription;
 
   return {
-    title: article.title,
+    title,
     description,
+    alternates: article.canonicalUrl
+      ? {
+          canonical: article.canonicalUrl,
+        }
+      : undefined,
     openGraph: {
       description,
-      title: article.title,
+      title,
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
       description,
-      title: article.title,
+      title,
     },
   };
 }

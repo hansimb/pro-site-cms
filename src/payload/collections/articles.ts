@@ -38,6 +38,41 @@ export const Articles: CollectionConfig = {
       required: true,
     },
     {
+      name: "seoTitle",
+      type: "text",
+    },
+    {
+      name: "seoDescription",
+      type: "textarea",
+    },
+    {
+      name: "canonicalUrl",
+      type: "text",
+    },
+    {
+      name: "keywords",
+      type: "array",
+      fields: [
+        {
+          name: "keyword",
+          type: "text",
+          required: true,
+        },
+      ],
+    },
+    {
+      name: "citationTitle",
+      type: "text",
+    },
+    {
+      name: "citationAuthors",
+      type: "text",
+    },
+    {
+      name: "citationPublication",
+      type: "text",
+    },
+    {
       name: "publishedAt",
       type: "date",
     },
@@ -64,6 +99,18 @@ export const Articles: CollectionConfig = {
           name: "url",
           type: "text",
           required: true,
+        },
+        {
+          name: "publisher",
+          type: "text",
+        },
+        {
+          name: "publishedAt",
+          type: "date",
+        },
+        {
+          name: "accessedAt",
+          type: "date",
         },
       ],
     },
