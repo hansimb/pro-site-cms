@@ -90,12 +90,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         )}
       </Stack>
 
-      <ArticleCitationBox citation={citation} />
-
       <RichTextContent
         content={article.content}
         referenceCount={article.references.length}
       />
+
+      <ArticleCitationBox citation={citation} />
 
       {article.references && article.references.length > 0 && (
         <Stack gap={3} maxW="4xl">

@@ -90,16 +90,44 @@ export function RichTextContent({
           textDecoration: "underline",
         },
         "& h1, & h2, & h3, & h4": {
+          color: "var(--chakra-colors-text)",
           fontWeight: 700,
           letterSpacing: "0",
           marginBottom: "0.75rem",
-          marginTop: "1.5rem",
+          marginTop: "1.75rem",
+        },
+        "& h1": {
+          fontSize: "2rem",
+          lineHeight: 1.15,
+        },
+        "& h2": {
+          fontSize: "1.5rem",
+          lineHeight: 1.2,
+        },
+        "& h3": {
+          fontSize: "1.25rem",
+          lineHeight: 1.25,
+        },
+        "& h4": {
+          fontSize: "1.1rem",
+          lineHeight: 1.3,
         },
         "& li": {
+          color: "var(--chakra-colors-text)",
           marginBottom: "0.5rem",
+          paddingInlineStart: "0.2rem",
         },
-        "& ol, & ul": {
-          paddingInlineStart: "1.25rem",
+        "& ol": {
+          listStyleType: "decimal",
+          paddingInlineStart: "1.6rem",
+        },
+        "& ul": {
+          listStyleType: "disc",
+          paddingInlineStart: "1.6rem",
+        },
+        "& ol li::marker, & ul li::marker": {
+          color: "var(--chakra-colors-text)",
+          fontWeight: 600,
         },
         "& p": {
           color: "var(--chakra-colors-text)",
