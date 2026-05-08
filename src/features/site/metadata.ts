@@ -24,6 +24,10 @@ function getSiteUrl(site: SiteModel) {
   }
 }
 
+export function buildArticleSocialImagePath(topic: string, slug: string) {
+  return `/writing/${encodeURIComponent(topic)}/${encodeURIComponent(slug)}/opengraph-image`;
+}
+
 function buildMetadataBase(site: SiteModel) {
   const metaTitle = trimToUndefined(site.settings.seo.metaTitle) ?? site.settings.siteTitle;
   const metaDescription =

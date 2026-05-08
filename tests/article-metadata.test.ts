@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { SiteArticle } from "../src/features/site/data/payload-site";
 import { getFallbackSiteModel } from "../src/features/site/data/payload-site";
-import { buildArticleMetadata } from "../src/features/site/metadata";
+import {
+  buildArticleMetadata,
+  buildArticleSocialImagePath,
+} from "../src/features/site/metadata";
 
 describe("article metadata", () => {
   it("prefers article SEO overrides and canonical URLs", () => {
@@ -31,5 +34,16 @@ describe("article metadata", () => {
       description: "SEO description",
       type: "article",
     });
+  });
+
+  it("builds a stable article social image path", () => {
+    expect(
+      buildArticleSocialImagePath(
+        "Technology, Markets & Macro",
+        "analysis-of-semiconductor-cyclicity-and-ai-market-expectations",
+      ),
+    ).toBe(
+      "/writing/Technology%2C%20Markets%20%26%20Macro/analysis-of-semiconductor-cyclicity-and-ai-market-expectations/opengraph-image",
+    );
   });
 });

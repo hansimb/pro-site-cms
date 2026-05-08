@@ -7,7 +7,10 @@ import { ArticleShareActions } from "@/app/(site)/components/article-share-actio
 import { RichTextContent } from "@/app/(site)/components/rich-text-content";
 import { buildReferenceHref, formatArticleCitation } from "@/features/site/article-citations";
 import { getArticleBySlug, getSiteModel } from "@/features/site/data/payload-site";
-import { buildArticleMetadata } from "@/features/site/metadata";
+import {
+  buildArticleMetadata,
+  buildArticleSocialImagePath,
+} from "@/features/site/metadata";
 
 interface ArticlePageProps {
   params: Promise<{ topic: string; slug: string }>;
@@ -24,6 +27,7 @@ export async function generateMetadata({
     getSiteModel(),
     getArticleBySlug(decodedTopic, decodedSlug),
   ]);
+  const socialImage = buildArticleSocialImagePath(decodedTopic, decodedSlug);
 
   if (!article) {
     return buildArticleMetadata(site, {
@@ -36,7 +40,19 @@ export async function generateMetadata({
     });
   }
 
-  return buildArticleMetadata(site, article);
+  const metadata = buildArticleMetadata(site, article);
+
+  return {
+    ...metadata,
+    openGraph: {
+      ...metadata.openGraph,
+      images: [socialImage],
+    },
+    twitter: {
+      ...metadata.twitter,
+      images: [socialImage.replace("/opengraph-image", "/twitter-image")],
+    },
+  };
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
