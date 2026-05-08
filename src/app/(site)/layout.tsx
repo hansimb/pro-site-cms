@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import NextLink from "next/link";
+import { Analytics } from "@vercel/analytics/next";
 import { Manrope, Newsreader } from "next/font/google";
 import { Box, Container, Flex, Link, Stack, Text } from "@chakra-ui/react";
 import { getSiteModel } from "@/features/site/data/payload-site";
@@ -203,6 +204,7 @@ export default async function SiteLayout({
             </Box>
           </ContactModalProvider>
         </SiteThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
