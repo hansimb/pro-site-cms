@@ -115,8 +115,7 @@ export default async function HomePage() {
                   Writing
                 </Heading>
                 <Text color="muted" fontSize="sm">
-                  {site.articles.length} articles ready from the new content
-                  surface.
+                  {site.articles.length} published articles across current topics.
                 </Text>
                 <Link
                   asChild
@@ -143,8 +142,7 @@ export default async function HomePage() {
                   Case studies
                 </Heading>
                 <Text color="muted" fontSize="sm">
-                  {site.caseStudies.length} case studies ready from the new
-                  content surface.
+                  {site.caseStudies.length} case studies from shipped work and outcomes.
                 </Text>
                 <Link
                   asChild
