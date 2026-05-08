@@ -1,5 +1,3 @@
-import configPromise from "@payload-config";
-import payload from "payload";
 import { cache } from "react";
 import {
   getDefaultHomePage,
@@ -10,6 +8,7 @@ import {
   normalizeContactSettings,
   type SiteContactSettings,
 } from "../contact";
+import { getPayloadInstance } from "./payload-client";
 
 type RawNavigationItem = {
   href?: unknown;
@@ -432,20 +431,6 @@ export function getFallbackSiteModel(): SiteModel {
     topics: [],
   };
 }
-
-let payloadInstance: typeof payload | null = null;
-
-const getPayloadInstance = cache(async function getPayloadInstance() {
-  if (payloadInstance) {
-    return payloadInstance;
-  }
-
-  payloadInstance = await payload.init({
-    config: await configPromise,
-  });
-
-  return payloadInstance;
-});
 
 const getSiteModelUncached = async () => {
   try {
