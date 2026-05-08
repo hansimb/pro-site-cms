@@ -1,43 +1,67 @@
 import { ImageResponse } from "next/og";
 import { getArticleBySlug, getSiteModel } from "@/features/site/data/payload-site";
 
-export const alt = "Article preview";
-export const contentType = "image/png";
-export const size = {
+export const articleSocialImageAlt = "Article preview";
+export const articleSocialImageContentType = "image/png";
+export const articleSocialImageSize = {
   width: 1200,
   height: 630,
 };
-
-interface ArticleSocialImageProps {
-  params: Promise<{ topic: string; slug: string }>;
-}
 
 function clampText(value: string, maxLength: number) {
   if (value.length <= maxLength) {
     return value;
   }
 
-  return `${value.slice(0, maxLength - 1).trimEnd()}…`;
+  return `${value.slice(0, maxLength - 1).trimEnd()}...`;
 }
 
-export default async function ArticleOpenGraphImage({
-  params,
-}: ArticleSocialImageProps) {
-  const { topic, slug } = await params;
-  const decodedTopic = decodeURIComponent(topic);
-  const decodedSlug = decodeURIComponent(slug);
+function getTopicFontSize(topic: string) {
+  if (topic.length > 28) {
+    return 20;
+  }
 
+  return 24;
+}
+
+function getTitleFontSize(title: string) {
+  if (title.length > 78) {
+    return 58;
+  }
+
+  if (title.length > 58) {
+    return 64;
+  }
+
+  return 72;
+}
+
+function getExcerptFontSize(excerpt: string) {
+  if (excerpt.length > 150) {
+    return 28;
+  }
+
+  return 32;
+}
+
+export async function buildArticleSocialImageResponse(
+  topic: string,
+  slug: string,
+) {
   const [site, article] = await Promise.all([
     getSiteModel(),
-    getArticleBySlug(decodedTopic, decodedSlug),
+    getArticleBySlug(topic, slug),
   ]);
 
-  const title = clampText(article?.title ?? decodedSlug, 88);
+  const title = clampText(article?.title ?? slug, 88);
   const excerpt = clampText(
     article?.excerpt ?? site.settings.siteDescription,
-    170,
+    150,
   );
   const byline = article?.citationAuthors?.trim();
+  const topicFontSize = getTopicFontSize(topic);
+  const titleFontSize = getTitleFontSize(title);
+  const excerptFontSize = getExcerptFontSize(excerpt);
 
   return new ImageResponse(
     (
@@ -59,6 +83,7 @@ export default async function ArticleOpenGraphImage({
             alignItems: "center",
             display: "flex",
             gap: "24px",
+            maxWidth: 980,
           }}
         >
           <div
@@ -82,13 +107,15 @@ export default async function ArticleOpenGraphImage({
               color: "#00ff88",
               display: "flex",
               fontFamily: "Arial, sans-serif",
-              fontSize: 24,
+              fontSize: topicFontSize,
               fontWeight: 700,
               letterSpacing: "0.08em",
+              lineHeight: 1.2,
+              maxWidth: 780,
               textTransform: "uppercase",
             }}
           >
-            {decodedTopic}
+            {topic}
           </div>
         </div>
 
@@ -104,10 +131,11 @@ export default async function ArticleOpenGraphImage({
             style={{
               display: "flex",
               fontFamily: "Arial, sans-serif",
-              fontSize: 72,
+              fontSize: titleFontSize,
               fontWeight: 700,
               letterSpacing: "-0.05em",
               lineHeight: 1.02,
+              maxWidth: 960,
             }}
           >
             {title}
@@ -133,7 +161,7 @@ export default async function ArticleOpenGraphImage({
               color: "#b7b7b7",
               display: "flex",
               fontFamily: "Arial, sans-serif",
-              fontSize: 32,
+              fontSize: excerptFontSize,
               lineHeight: 1.3,
               maxWidth: 920,
             }}
@@ -157,6 +185,6 @@ export default async function ArticleOpenGraphImage({
         </div>
       </div>
     ),
-    size,
+    articleSocialImageSize,
   );
 }
