@@ -1,5 +1,6 @@
 import configPromise from "@payload-config";
 import payload from "payload";
+import { cache } from "react";
 import {
   getDefaultHomePage,
   mapHomePageData,
@@ -434,7 +435,7 @@ export function getFallbackSiteModel(): SiteModel {
 
 let payloadInstance: typeof payload | null = null;
 
-async function getPayloadInstance() {
+const getPayloadInstance = cache(async function getPayloadInstance() {
   if (payloadInstance) {
     return payloadInstance;
   }
@@ -444,9 +445,9 @@ async function getPayloadInstance() {
   });
 
   return payloadInstance;
-}
+});
 
-export async function getSiteModel() {
+const getSiteModelUncached = async () => {
   try {
     const instance = await getPayloadInstance();
 
@@ -527,11 +528,13 @@ export async function getSiteModel() {
     console.error("Failed to load Payload site model", error);
     return getFallbackSiteModel();
   }
-}
+};
 
-export async function getArticlesByTopic(
+export const getSiteModel = cache(getSiteModelUncached);
+
+const getArticlesByTopicUncached = async (
   topic: string,
-): Promise<SiteArticleSummary[]> {
+): Promise<SiteArticleSummary[]> => {
   try {
     const instance = await getPayloadInstance();
 
@@ -558,12 +561,14 @@ export async function getArticlesByTopic(
     console.error(`Failed to load articles for topic ${topic}`, error);
     return [];
   }
-}
+};
 
-export async function getArticleBySlug(
+export const getArticlesByTopic = cache(getArticlesByTopicUncached);
+
+const getArticleBySlugUncached = async (
   topic: string,
   slug: string,
-): Promise<SiteArticle | null> {
+): Promise<SiteArticle | null> => {
   try {
     const instance = await getPayloadInstance();
 
@@ -678,11 +683,13 @@ export async function getArticleBySlug(
     console.error(`Failed to load article ${topic}/${slug}`, error);
     return null;
   }
-}
+};
 
-export async function getCaseStudyBySlug(
+export const getArticleBySlug = cache(getArticleBySlugUncached);
+
+const getCaseStudyBySlugUncached = async (
   slug: string,
-): Promise<SiteCaseStudy | null> {
+): Promise<SiteCaseStudy | null> => {
   try {
     const instance = await getPayloadInstance();
 
@@ -737,4 +744,6 @@ export async function getCaseStudyBySlug(
     console.error(`Failed to load case study ${slug}`, error);
     return null;
   }
-}
+};
+
+export const getCaseStudyBySlug = cache(getCaseStudyBySlugUncached);
