@@ -109,6 +109,7 @@ export type SiteNavigationItem = {
 export type SiteArticleSummary = {
   excerpt: string;
   href: string;
+  keywords: string[];
   title: string;
   topic: string;
 };
@@ -363,10 +364,25 @@ function normalizeNavigation(items: unknown): SiteNavigationItem[] {
 }
 
 function mapArticleSummary(article: RawArticleDoc): SiteArticleSummary {
+  const parsedKeywords = parseArticleKeywords(article.keywordsText);
+
   return {
     href: `/writing/${encodeURIComponent(String(article.topic ?? ""))}/${encodeURIComponent(String(article.slug ?? ""))}`,
     title: String(article.title ?? ""),
     excerpt: String(article.excerpt ?? ""),
+    keywords:
+      parsedKeywords.length > 0
+        ? parsedKeywords
+        : Array.isArray(article.keywords)
+          ? article.keywords.flatMap((item) => {
+              const keyword = item as RawKeyword | null | undefined;
+
+              return typeof keyword?.keyword === "string" &&
+                keyword.keyword.trim().length > 0
+                ? [keyword.keyword]
+                : [];
+            })
+          : [],
     topic: String(article.topic ?? ""),
   };
 }
