@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import NextLink from "next/link";
 import { notFound } from "next/navigation";
-import { Box, Button, Heading, HStack, Link, Stack, Text } from "@chakra-ui/react";
+import { Box, Heading, HStack, Link, Stack, Text } from "@chakra-ui/react";
+import { ArticleBackButton } from "@/app/(site)/components/article-back-button";
 import { ArticleCitationBox } from "@/app/(site)/components/article-citation-box";
 import { ArticleShareActions } from "@/app/(site)/components/article-share-actions";
 import { RichTextContent } from "@/app/(site)/components/rich-text-content";
@@ -65,14 +65,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   return (
     <Stack gap={6}>
       <Stack gap={3} maxW="4xl">
-        <Button alignSelf="start" asChild size="sm" variant="ghost">
-          <NextLink href={`/writing/${encodeURIComponent(decodedTopic)}`}>
-            ← Back to {decodedTopic}
-          </NextLink>
-        </Button>
+        <ArticleBackButton fallbackHref="/writing" label="Back" />
         <Heading as="h1" fontSize={{ base: "xl", md: "3xl" }} letterSpacing="0">
           {article.title}
         </Heading>
+        {article.citationAuthors && (
+          <Text color="muted" fontSize="sm" fontWeight="600" letterSpacing="0.02em">
+            By {article.citationAuthors}
+          </Text>
+        )}
         <Text color="muted" fontSize="lg">
           {article.excerpt}
         </Text>

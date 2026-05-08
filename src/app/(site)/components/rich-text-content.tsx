@@ -22,6 +22,19 @@ function hasLexicalRoot(
   );
 }
 
+function appendVersionQuery(url: string | undefined, version: string | number | undefined) {
+  if (!url) {
+    return "";
+  }
+
+  if (version === undefined || version === null || String(version).trim().length === 0) {
+    return url;
+  }
+
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}v=${encodeURIComponent(String(version))}`;
+}
+
 function createConverters(referenceCount: number): JSXConverters {
   return {
     ...defaultJSXConverters,
@@ -70,6 +83,100 @@ function createConverters(referenceCount: number): JSXConverters {
       }
 
       return formatted;
+    },
+    upload: ({ node }) => {
+      const uploadNode = node as {
+        fields?: { alt?: string };
+        value?: {
+          alt?: string;
+          filename?: string;
+          height?: number;
+          id?: number | string;
+          mimeType?: string;
+          sizes?: Record<
+            string,
+            | {
+                filename?: string;
+                filesize?: number;
+                height?: number;
+                mimeType?: string;
+                url?: string;
+                width?: number;
+              }
+            | null
+            | undefined
+          >;
+          url?: string;
+          width?: number;
+        };
+      };
+
+      if (!uploadNode.value || typeof uploadNode.value !== "object") {
+        return null;
+      }
+
+      const uploadDoc = uploadNode.value;
+      const alt = uploadNode.fields?.alt || uploadDoc.alt || "";
+      const version = uploadDoc.id ?? uploadDoc.filename;
+      const url = appendVersionQuery(uploadDoc.url, version);
+
+      if (!uploadDoc.mimeType?.startsWith("image")) {
+        return (
+          <a href={url} rel="noopener noreferrer">
+            {uploadDoc.filename}
+          </a>
+        );
+      }
+
+      if (!uploadDoc.sizes || Object.keys(uploadDoc.sizes).length === 0) {
+        return (
+          <img
+            alt={alt}
+            decoding="async"
+            height={uploadDoc.height}
+            loading="lazy"
+            src={url}
+            width={uploadDoc.width}
+          />
+        );
+      }
+
+      const pictureSources = Object.entries(uploadDoc.sizes).flatMap(([size, imageSize]) => {
+        if (
+          !imageSize ||
+          !imageSize.width ||
+          !imageSize.height ||
+          !imageSize.mimeType ||
+          !imageSize.filesize ||
+          !imageSize.filename ||
+          !imageSize.url
+        ) {
+          return [];
+        }
+
+        return [
+          <source
+            key={size}
+            media={`(max-width: ${imageSize.width}px)`}
+            srcSet={appendVersionQuery(imageSize.url, version)}
+            type={imageSize.mimeType}
+          />,
+        ];
+      });
+
+      return (
+        <picture>
+          {pictureSources}
+          <img
+            alt={alt}
+            decoding="async"
+            height={uploadDoc.height}
+            loading="lazy"
+            src={url}
+            width={uploadDoc.width}
+          />
+        </picture>
+      );
     },
   };
 }

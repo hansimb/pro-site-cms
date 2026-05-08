@@ -18,6 +18,42 @@ function normalizeKeywordList(value: string) {
     .filter(Boolean);
 }
 
+type PublishStateInput = {
+  now?: string;
+  originalDoc?: {
+    _status?: unknown;
+    publishedAt?: unknown;
+  } | null;
+  publishedAt?: unknown;
+  status?: unknown;
+};
+
+export function resolvePublishedAt({
+  now = new Date().toISOString(),
+  originalDoc,
+  publishedAt,
+  status,
+}: PublishStateInput) {
+  if (typeof publishedAt === "string" && publishedAt.trim().length > 0) {
+    return publishedAt;
+  }
+
+  if (
+    originalDoc &&
+    originalDoc._status === "published" &&
+    typeof originalDoc.publishedAt === "string" &&
+    originalDoc.publishedAt.trim().length > 0
+  ) {
+    return originalDoc.publishedAt;
+  }
+
+  if (status === "published") {
+    return now;
+  }
+
+  return publishedAt;
+}
+
 export const Articles: CollectionConfig = {
   slug: "articles",
   admin: {
@@ -29,7 +65,7 @@ export const Articles: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [
-      async ({ data }) => {
+      async ({ data, originalDoc }) => {
         if (!data) {
           return data;
         }
@@ -44,6 +80,19 @@ export const Articles: CollectionConfig = {
             keyword,
           }));
         }
+
+        data.publishedAt = resolvePublishedAt({
+          originalDoc:
+            originalDoc && typeof originalDoc === "object"
+              ? {
+                  _status: "_status" in originalDoc ? originalDoc._status : undefined,
+                  publishedAt:
+                    "publishedAt" in originalDoc ? originalDoc.publishedAt : undefined,
+                }
+              : null,
+          publishedAt: data.publishedAt,
+          status: data._status,
+        });
 
         return data;
       },
