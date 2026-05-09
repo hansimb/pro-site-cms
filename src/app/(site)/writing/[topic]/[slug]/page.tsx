@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Box, Heading, HStack, Link, Stack, Text } from "@chakra-ui/react";
 import { ArticleBackButton } from "@/app/(site)/components/article-back-button";
 import { ArticleCitationBox } from "@/app/(site)/components/article-citation-box";
+import { ArticleFeedbackCta } from "@/app/(site)/components/article-feedback-cta";
 import { ArticleShareActions } from "@/app/(site)/components/article-share-actions";
 import { ArticleTopicEyebrow } from "@/app/(site)/components/article-topic-eyebrow";
 import { RichTextContent } from "@/app/(site)/components/rich-text-content";
@@ -130,6 +131,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       />
 
       <ArticleShareActions articleUrl={articleUrl} title={article.title} />
+
+      <ArticleFeedbackCta />
 
       <ArticleCitationBox citation={citation} />
 
