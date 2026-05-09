@@ -187,6 +187,26 @@ export default async function SiteLayout({
                 >
                   <Stack gap={2}>
                     <Text>{site.settings.siteDescription}</Text>
+                    <Flex
+                      align="center"
+                      color="muted"
+                      fontSize="sm"
+                      gap={4}
+                      wrap="wrap"
+                    >
+                      {site.navigation.map((item) => (
+                        <Link
+                          asChild
+                          color="muted"
+                          key={item.href}
+                          textDecoration="none"
+                          _hover={{ color: "accent" }}
+                        >
+                          <NextLink href={item.href}>{item.label}</NextLink>
+                        </Link>
+                      ))}
+                      <ContactModalTrigger color="muted" label="Contact" />
+                    </Flex>
                     {site.settings.contact.email && (
                       <Flex align="center" gap={2}>
                         <Text color="text">{site.settings.contact.email}</Text>
