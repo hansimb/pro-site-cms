@@ -1,4 +1,5 @@
 import { createElement } from "react";
+import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ChakraProvider } from "@chakra-ui/react";
 import { describe, expect, it } from "vitest";
@@ -22,5 +23,16 @@ describe("ArticleFeedbackCta", () => {
     expect(markup).toContain("Any thoughts or feedback?");
     expect(markup).toContain("Send me a message and let&#x27;s discuss. Go ahead, prove me wrong.");
     expect(markup).toContain(">Contact<");
+  });
+
+  it("keeps text CTA triggers from stretching across the full card width", () => {
+    const contactActions = readFileSync(
+      "src/app/(site)/components/contact-actions.tsx",
+      "utf8",
+    );
+    const homePage = readFileSync("src/app/(site)/page.tsx", "utf8");
+
+    expect(contactActions).toContain('alignSelf="start"');
+    expect(homePage).toContain('alignSelf="start"');
   });
 });

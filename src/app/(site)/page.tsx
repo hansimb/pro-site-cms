@@ -23,6 +23,7 @@ const interactivePanelProps = {
 };
 
 const linkHoverProps = {
+  alignSelf: "start",
   borderRadius: "control",
   px: 2,
   py: 1,
@@ -118,6 +119,7 @@ export default async function HomePage() {
                   {site.articles.length} published articles across current topics.
                 </Text>
                 <Link
+                  alignSelf="start"
                   asChild
                   color="accent"
                   fontSize="sm"
@@ -145,6 +147,7 @@ export default async function HomePage() {
                   {site.caseStudies.length} case studies from shipped work and outcomes.
                 </Text>
                 <Link
+                  alignSelf="start"
                   asChild
                   color="accent"
                   fontSize="sm"
@@ -462,6 +465,7 @@ export default async function HomePage() {
                               </Text>
                             </Stack>
                             <Link
+                              alignSelf="start"
                               asChild
                               color="accent"
                               fontSize="sm"
@@ -586,6 +590,7 @@ export default async function HomePage() {
                       </Grid>
                     )}
                     <Link
+                      alignSelf="start"
                       asChild
                       color="accent"
                       css={{ WebkitTapHighlightColor: "transparent" }}

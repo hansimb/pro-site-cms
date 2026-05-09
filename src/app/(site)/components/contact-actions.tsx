@@ -80,6 +80,7 @@ export function ContactModalTrigger({
   return (
     <Link
       as="button"
+      alignSelf="start"
       color={color}
       fontSize={fontSize}
       onClick={context.openModal}
