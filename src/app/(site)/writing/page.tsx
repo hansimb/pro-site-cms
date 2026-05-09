@@ -10,6 +10,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { ArticleTopicEyebrow } from "@/app/(site)/components/article-topic-eyebrow";
 import { getSiteModel } from "@/features/site/data/payload-site";
 import { buildSimplePageMetadata } from "@/features/site/metadata";
 
@@ -143,6 +144,7 @@ export default async function WritingPage() {
                         rounded="panel"
                         w="100%"
                       >
+                        <ArticleTopicEyebrow linked={false} topic={article.topic} />
                         <Heading as="h2" fontSize="md" letterSpacing="0">
                           {article.title}
                         </Heading>
@@ -166,7 +168,7 @@ export default async function WritingPage() {
                           </HStack>
                         )}
                         <Text color="muted" fontSize="sm" mt={1}>
-                          {article.topic} • {article.excerpt}
+                          {article.excerpt}
                         </Text>
                       </Box>
                     );

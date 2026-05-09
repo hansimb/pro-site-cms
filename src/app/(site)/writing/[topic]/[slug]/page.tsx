@@ -4,6 +4,7 @@ import { Box, Heading, HStack, Link, Stack, Text } from "@chakra-ui/react";
 import { ArticleBackButton } from "@/app/(site)/components/article-back-button";
 import { ArticleCitationBox } from "@/app/(site)/components/article-citation-box";
 import { ArticleShareActions } from "@/app/(site)/components/article-share-actions";
+import { ArticleTopicEyebrow } from "@/app/(site)/components/article-topic-eyebrow";
 import { RichTextContent } from "@/app/(site)/components/rich-text-content";
 import { buildReferenceHref, formatArticleCitation } from "@/features/site/article-citations";
 import { getArticleBySlug, getSiteModel } from "@/features/site/data/payload-site";
@@ -82,6 +83,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     <Stack gap={6}>
       <Stack gap={3} maxW="4xl">
         <ArticleBackButton fallbackHref="/writing" label="Back" />
+        <ArticleTopicEyebrow topic={decodedTopic} />
         <Heading as="h1" fontSize={{ base: "xl", md: "3xl" }} letterSpacing="0">
           {article.title}
         </Heading>
