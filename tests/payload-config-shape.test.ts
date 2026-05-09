@@ -18,6 +18,22 @@ describe("payload config shape", () => {
     expect(config.admin.suppressHydrationWarning).toBe(true);
   });
 
+  it("allows public read access to media files", async () => {
+    const config = await configPromise;
+    const media = config.collections?.find((collection) => collection.slug === "media");
+
+    const readAccess = media?.access?.read;
+
+    expect(readAccess).toBeTypeOf("function");
+    const result = await (readAccess as NonNullable<typeof readAccess>)({
+      id: undefined,
+      data: undefined,
+      req: {} as never,
+    });
+
+    expect(result).toBe(true);
+  });
+
   it("uses a standardized structure for case studies", async () => {
     const config = await configPromise;
     const caseStudies = config.collections?.find(
