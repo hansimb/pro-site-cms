@@ -133,6 +133,7 @@ npm run typecheck
 npm run test
 npm run migrate
 npm run migrate:create
+npm run db:backup
 ```
 
 ## Data flow

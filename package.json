@@ -10,6 +10,7 @@
     "payload": "payload",
     "migrate": "payload migrate --config payload.config.ts",
     "migrate:create": "payload migrate:create --config payload.config.ts",
+    "db:backup": "node ./scripts/db-backup.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
