@@ -164,7 +164,7 @@ export default async function SiteLayout({
                     <SocialIconLinks
                       githubUrl={site.settings.contact.githubUrl}
                       linkedinUrl={site.settings.contact.linkedinUrl}
-                      size="xs"
+                      size="md"
                     />
                     <MobileNav navigation={site.navigation} />
                   </Flex>
