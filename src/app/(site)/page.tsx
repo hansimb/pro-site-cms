@@ -395,6 +395,7 @@ export default async function HomePage() {
                           gap={3}
                         >
                           <ContactModalTrigger
+                            alignSelf="start"
                             color="accent"
                             fontSize="sm"
                             label={block.buttonLabel ?? "Contact"}

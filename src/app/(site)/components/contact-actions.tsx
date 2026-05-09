@@ -61,12 +61,14 @@ export function ContactModalProvider({
 }
 
 type ContactModalTriggerProps = {
+  alignSelf?: string;
   color?: string;
   fontSize?: string | Record<string, string>;
   label?: string;
 };
 
 export function ContactModalTrigger({
+  alignSelf,
   color = "muted",
   fontSize = "sm",
   label = "Contact",
@@ -80,7 +82,7 @@ export function ContactModalTrigger({
   return (
     <Link
       as="button"
-      alignSelf="start"
+      alignSelf={alignSelf}
       color={color}
       fontSize={fontSize}
       onClick={context.openModal}

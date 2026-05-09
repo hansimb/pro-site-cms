@@ -31,8 +31,14 @@ describe("ArticleFeedbackCta", () => {
       "utf8",
     );
     const homePage = readFileSync("src/app/(site)/page.tsx", "utf8");
+    const articleFeedbackCta = readFileSync(
+      "src/app/(site)/components/article-feedback-cta.tsx",
+      "utf8",
+    );
 
-    expect(contactActions).toContain('alignSelf="start"');
+    expect(contactActions).toContain("alignSelf?: string");
+    expect(contactActions).toContain("alignSelf={alignSelf}");
     expect(homePage).toContain('alignSelf="start"');
+    expect(articleFeedbackCta).toContain('alignSelf="start"');
   });
 });

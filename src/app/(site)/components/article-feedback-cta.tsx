@@ -18,7 +18,12 @@ export function ArticleFeedbackCta() {
         <Text color="muted" lineHeight="1.8">
           Send me a message and let&apos;s discuss. Go ahead, prove me wrong.
         </Text>
-        <ContactModalTrigger color="accent" fontSize="sm" label="Contact" />
+        <ContactModalTrigger
+          alignSelf="start"
+          color="accent"
+          fontSize="sm"
+          label="Contact"
+        />
       </Stack>
     </Box>
   );
