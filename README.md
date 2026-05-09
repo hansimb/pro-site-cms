@@ -133,7 +133,7 @@ npm run typecheck
 npm run test
 npm run migrate
 npm run migrate:create
-npm run db:backup
+npm run db:backup  # requires pg_dump on PATH and DATABASE_URL or NEON_CONNECTION_STRING
 ```
 
 ## Data flow
