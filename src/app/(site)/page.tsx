@@ -5,6 +5,10 @@ import { StatDetailsTooltip } from "./components/stat-details-tooltip";
 import { getGithubSignalCards } from "@/features/site/github-stats";
 import { getSiteModel } from "@/features/site/data/payload-site";
 
+// GitHub GraphQL uses POST requests, so make the homepage refresh cadence
+// explicit instead of relying on individual fetches to revalidate the route.
+export const revalidate = 3600;
+
 const interactivePanelProps = {
   position: "relative" as const,
   overflow: "hidden" as const,
