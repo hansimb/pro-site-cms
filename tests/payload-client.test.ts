@@ -18,7 +18,9 @@ describe("payload client", () => {
   });
 
   it("deduplicates concurrent payload initialization", async () => {
-    let resolvePayload: ((value: { findGlobal: () => Promise<{}> }) => void) | undefined;
+    let resolvePayload:
+      | ((value: { findGlobal: () => Promise<object> }) => void)
+      | undefined;
 
     getPayloadMock.mockImplementation(
       () =>

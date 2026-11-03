@@ -1,4 +1,3 @@
-import { createElement } from "react";
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ChakraProvider } from "@chakra-ui/react";
@@ -10,14 +9,14 @@ import { siteSystem } from "../src/features/site/theme/system";
 describe("ArticleFeedbackCta", () => {
   it("renders the feedback copy and uses the existing contact trigger", () => {
     const markup = renderToStaticMarkup(
-      createElement(ChakraProvider, {
-        value: siteSystem,
-        children: createElement(ContactModalProvider, {
-          email: "hello@example.com",
-          linkedinUrl: "https://www.linkedin.com/in/example",
-          children: createElement(ArticleFeedbackCta),
-        }),
-      }),
+      <ChakraProvider value={siteSystem}>
+        <ContactModalProvider
+          email="hello@example.com"
+          linkedinUrl="https://www.linkedin.com/in/example"
+        >
+          <ArticleFeedbackCta />
+        </ContactModalProvider>
+      </ChakraProvider>,
     );
 
     expect(markup).toContain("Any thoughts or feedback?");

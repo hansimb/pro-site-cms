@@ -1,4 +1,3 @@
-import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { ChakraProvider } from "@chakra-ui/react";
 import { describe, expect, it } from "vitest";
@@ -8,12 +7,9 @@ import { siteSystem } from "../src/features/site/theme/system";
 describe("ArticleTopicEyebrow", () => {
   it("renders the topic as a link to the topic page", () => {
     const markup = renderToStaticMarkup(
-      createElement(ChakraProvider, {
-        value: siteSystem,
-        children: createElement(ArticleTopicEyebrow, {
-          topic: "Technology, Markets & Macro",
-        }),
-      }),
+      <ChakraProvider value={siteSystem}>
+        <ArticleTopicEyebrow topic="Technology, Markets & Macro" />
+      </ChakraProvider>,
     );
 
     expect(markup).toContain("/writing/Technology%2C%20Markets%20%26%20Macro");
@@ -22,16 +18,12 @@ describe("ArticleTopicEyebrow", () => {
 
   it("renders plain eyebrow text when linking is disabled", () => {
     const markup = renderToStaticMarkup(
-      createElement(ChakraProvider, {
-        value: siteSystem,
-        children: createElement(ArticleTopicEyebrow, {
-          linked: false,
-          topic: "Analysis",
-        }),
-      }),
+      <ChakraProvider value={siteSystem}>
+        <ArticleTopicEyebrow linked={false} topic="Analysis" />
+      </ChakraProvider>,
     );
 
-    expect(markup).not.toContain('href="/writing/Analysis"');
-    expect(markup).toContain(">Analysis<");
+    expect(markup).toContain("Analysis");
+    expect(markup).not.toContain("/writing/Analysis");
   });
 });
